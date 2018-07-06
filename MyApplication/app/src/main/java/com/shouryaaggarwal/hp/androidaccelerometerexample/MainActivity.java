@@ -20,14 +20,18 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaXMax = 0;
     private float deltaYMax = 0;
     private float deltaZMax = 0;
+    private float XThreshold = 30;
+    private float ZThreshold = 30;
 
     private float deltaX = 0;
     private float deltaY = 0;
     private float deltaZ = 0;
 
+    private String resultant = "";
+
     private float vibrateThreshold = 0;
 
-    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ;
+    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action;
 
     public Vibrator v;
 
@@ -61,6 +65,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         maxX = (TextView) findViewById(R.id.maxX);
         maxY = (TextView) findViewById(R.id.maxY);
         maxZ = (TextView) findViewById(R.id.maxZ);
+
+        action = (TextView) findViewById(R.id.action);
     }
 
     //onResume() register the accelerometer for listening the events
@@ -91,15 +97,17 @@ public class MainActivity extends Activity implements SensorEventListener {
         displayMaxValues();
 
         // get the change of the x,y,z values of the accelerometer
-        deltaX = Math.abs(lastX - event.values[0]);
-        deltaY = Math.abs(lastY - event.values[1]);
-        deltaZ = Math.abs(lastZ - event.values[2]);
+        deltaX = (lastX - event.values[0]);
+        deltaY = (lastY - event.values[1]);
+        deltaZ = (lastZ - event.values[2]);
 
         // if the change is below 2, it is just plain noise
-        if (deltaX < 2)
+        if (Math.abs(deltaX) < 2)
             deltaX = 0;
-        if (deltaY < 2)
+        if (Math.abs(deltaY) < 2)
             deltaY = 0;
+        if (Math.abs(deltaZ) < 2)
+            deltaZ = 0;
         if ((deltaX > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
             //v.vibrate(50);
         }
@@ -120,17 +128,33 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
-        if (deltaX > deltaXMax) {
+        if (deltaX > XThreshold) {
             deltaXMax = deltaX;
             maxX.setText(Float.toString(deltaXMax));
+            resultant = "Next";
+            action.setText(resultant);
         }
-        if (deltaY > deltaYMax) {
+        if (deltaX < -XThreshold) {
+            deltaXMax = deltaX;
+            maxX.setText(Float.toString(deltaXMax));
+            resultant = "Previous";
+            action.setText(resultant);
+        }
+        if (Math.abs(deltaY) > Math.abs(deltaYMax)) {
             deltaYMax = deltaY;
             maxY.setText(Float.toString(deltaYMax));
         }
-        if (deltaZ > deltaZMax) {
+        if (deltaZ > ZThreshold) {
             deltaZMax = deltaZ;
             maxZ.setText(Float.toString(deltaZMax));
+            resultant = "Play/Pause";
+            action.setText(resultant);
+        }
+        if (deltaZ < -ZThreshold) {
+            deltaZMax = deltaZ;
+            maxZ.setText(Float.toString(deltaZMax));
+            resultant = "Play/Pause";
+            action.setText(resultant);
         }
     }
 }
