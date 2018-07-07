@@ -23,14 +23,14 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaXMax = 0;
     private float deltaXMin = 0;
     private float deltaZMax = 0;
-    private float XThreshold = 40;
-    private float ZThreshold = 40;
-    private float YThreshold = 25;
+    private float XThreshold = 15;
+    private float ZThreshold = 15;
+    private float YThreshold = 200;
 
     private boolean ongoingX = false;
     private boolean ongoingZ = false;
 
-    private int coolDown = 1;
+    private float coolDown = 0.5f;
 
     private float deltaX = 0;
     private float deltaY = 0;
@@ -52,10 +52,10 @@ public class MainActivity extends Activity implements SensorEventListener {
         context = getApplicationContext();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
             // success! we have an accelerometer
 
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             vibrateThreshold = accelerometer.getMaximumRange() / 2;
         } else {
@@ -130,16 +130,20 @@ public class MainActivity extends Activity implements SensorEventListener {
         displayCleanValues();
         // display the current x,y,z accelerometer values
         displayCurrentValues();
-        // display the max x,y,z accelerometer values
-        displayMaxValues();
 
 
 
         // get the change of the x,y,z values of the accelerometer
 
-        deltaX = (lastX - event.values[0]);
-        deltaY = (lastY - event.values[1]);
-        deltaZ = (lastZ - event.values[2]);
+//        deltaX = (lastX - event.values[0]);
+//        deltaY = (lastY - event.values[1]);
+//        deltaZ = (lastZ - event.values[2]);
+        deltaX = event.values[0];
+        deltaY = event.values[1];
+        deltaZ = event.values[2];
+
+        // display the max x,y,z accelerometer values
+        displayMaxValues();
 
 
 
@@ -204,12 +208,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
-        if (deltaX > deltaXMax) {
+        if (deltaX > XThreshold) {
             ongoingX = true;
             deltaXMax = deltaX;
             maxX.setText(Float.toString(deltaXMax));
         }
-        if (deltaX < deltaXMin) {
+        if (deltaX < -XThreshold) {
             ongoingX = true;
             deltaXMin = deltaX;
             maxX.setText(Float.toString(deltaXMin));
@@ -218,7 +222,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     //        deltaYMax = deltaY;
     //        maxY.setText(Float.toString(deltaYMax));
     //    }
-        if (Math.abs(deltaZ) > deltaZMax) {
+        if (Math.abs(deltaZ) > ZThreshold  ) {
             ongoingZ = true;
             deltaZMax = deltaZ;
             maxZ.setText(Float.toString(deltaZMax));
