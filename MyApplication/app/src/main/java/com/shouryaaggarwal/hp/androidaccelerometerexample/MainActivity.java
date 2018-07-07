@@ -7,25 +7,21 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Vibrator;
 import android.widget.TextView;
 
 
 public class MainActivity extends Activity implements SensorEventListener {
 
-    private float lastX, lastY, lastZ;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private Context context;
 
     private float deltaXMax = 0;
     private float deltaXMin = 0;
     private float deltaZMax = 0;
     private float XThreshold = 15;
     private float ZThreshold = 15;
-    private float YThreshold = 200;
 
     private boolean ongoingX = false;
     private boolean ongoingZ = false;
@@ -49,7 +45,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializeViews();
-        context = getApplicationContext();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
@@ -135,9 +130,6 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         // get the change of the x,y,z values of the accelerometer
 
-//        deltaX = (lastX - event.values[0]);
-//        deltaY = (lastY - event.values[1]);
-//        deltaZ = (lastZ - event.values[2]);
         deltaX = event.values[0];
         deltaY = event.values[1];
         deltaZ = event.values[2];
@@ -157,23 +149,24 @@ public class MainActivity extends Activity implements SensorEventListener {
             else if (ongoingX && ongoingZ) {
                 ongoingX = false;
                 ongoingZ = false;
-                deltaXMax = 0;
-                deltaXMin = 0;
-                deltaZMax = 0;
-                resultant = "Ambiguous Flick";
-                action.setText(resultant);
-                sensorManager.unregisterListener(this);
-                Utils.delay(coolDown, new Utils.DelayCallback() {
-                    @Override
-                    public void afterDelay() {
-                        // Do something after delay
-                        coolDownFinish();
-                    }
-                });
+                if ((Math.abs(deltaZMax) > deltaXMax) && (Math.abs(deltaZMax) > Math.abs(deltaXMin))) {
+                    deltaZMax = 0;
+                    resultant = "Play/Pause";
+                    action.setText(resultant);
+                    sensorManager.unregisterListener(this);
+                    Utils.delay(coolDown, new Utils.DelayCallback() {
+                        @Override
+                        public void afterDelay() {
+                            // Do something after delay
+                            coolDownFinish();
+                        }
+                    });
+                }
+                else {
+                    CheckX();
+                }
             }
         }
-        if (Math.abs(deltaY) < YThreshold)
-            deltaY = 0;
         if (Math.abs(deltaZ) < ZThreshold) {
             deltaZ = 0;
             if (ongoingZ && !ongoingX) {
@@ -208,20 +201,16 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
-        if (deltaX > XThreshold) {
+        if (deltaX > Math.max(deltaXMax, XThreshold)) {
             ongoingX = true;
             deltaXMax = deltaX;
             maxX.setText(Float.toString(deltaXMax));
         }
-        if (deltaX < -XThreshold) {
+        if (deltaX < Math.min(deltaXMin, -XThreshold)) {
             ongoingX = true;
             deltaXMin = deltaX;
             maxX.setText(Float.toString(deltaXMin));
         }
-    //    if (Math.abs(deltaY) > Math.abs(deltaYMax)) {
-    //        deltaYMax = deltaY;
-    //        maxY.setText(Float.toString(deltaYMax));
-    //    }
         if (Math.abs(deltaZ) > ZThreshold  ) {
             ongoingZ = true;
             deltaZMax = deltaZ;
