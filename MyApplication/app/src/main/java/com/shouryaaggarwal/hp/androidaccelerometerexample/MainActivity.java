@@ -150,6 +150,23 @@ public class MainActivity extends Activity implements SensorEventListener {
                 ongoingX = false;
                 CheckX();
             }
+            else if (ongoingX && ongoingZ) {
+                ongoingX = false;
+                ongoingZ = false;
+                deltaXMax = 0;
+                deltaXMin = 0;
+                deltaZMax = 0;
+                resultant = "Ambiguous Flick";
+                action.setText(resultant);
+                sensorManager.unregisterListener(this);
+                Utils.delay(coolDown, new Utils.DelayCallback() {
+                    @Override
+                    public void afterDelay() {
+                        // Do something after delay
+                        coolDownFinish();
+                    }
+                });
+            }
         }
         if (Math.abs(deltaY) < YThreshold)
             deltaY = 0;
