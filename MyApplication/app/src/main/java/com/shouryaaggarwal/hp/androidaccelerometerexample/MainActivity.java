@@ -10,18 +10,22 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.widget.TextView;
 
+
 public class MainActivity extends Activity implements SensorEventListener {
 
     private float lastX, lastY, lastZ;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
+    private Context context;
 
     private float deltaXMax = 0;
-    private float deltaYMax = 0;
+    private float deltaXMin = 0;
     private float deltaZMax = 0;
-    private float XThreshold = 30;
-    private float ZThreshold = 30;
+    private float XThreshold = 25;
+    private float ZThreshold = 25;
+    private float YThreshold = 25;
+    private boolean ongoing = false;
 
     private float deltaX = 0;
     private float deltaY = 0;
@@ -35,11 +39,12 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     public Vibrator v;
 
-    @Override
+        @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializeViews();
+        context = getApplicationContext();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
@@ -49,7 +54,7 @@ public class MainActivity extends Activity implements SensorEventListener {
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             vibrateThreshold = accelerometer.getMaximumRange() / 2;
         } else {
-            // fai! we dont have an accelerometer!
+            // fail! we dont have an accelerometer!
         }
 
         //initialize vibration
@@ -81,6 +86,19 @@ public class MainActivity extends Activity implements SensorEventListener {
         sensorManager.unregisterListener(this);
     }
 
+    public void CheckX() {
+        if (deltaXMax > Math.abs(deltaXMin)){
+            resultant = "Next";
+            action.setText(resultant);
+        }
+        else{
+            resultant = "Previous";
+            action.setText(resultant);
+        }
+        deltaXMax = 0;
+        deltaXMin = 0;
+    }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
@@ -96,17 +114,26 @@ public class MainActivity extends Activity implements SensorEventListener {
         // display the max x,y,z accelerometer values
         displayMaxValues();
 
+
+
         // get the change of the x,y,z values of the accelerometer
         deltaX = (lastX - event.values[0]);
         deltaY = (lastY - event.values[1]);
         deltaZ = (lastZ - event.values[2]);
 
-        // if the change is below 2, it is just plain noise
-        if (Math.abs(deltaX) < 2)
+
+
+        // if the change is below Threshold, it is not a flick
+        if (Math.abs(deltaX) < XThreshold) {
             deltaX = 0;
-        if (Math.abs(deltaY) < 2)
+            if (ongoing) {
+                ongoing = false;
+                CheckX();
+            }
+        }
+        if (Math.abs(deltaY) < YThreshold)
             deltaY = 0;
-        if (Math.abs(deltaZ) < 2)
+        if (Math.abs(deltaZ) < ZThreshold)
             deltaZ = 0;
         if ((deltaX > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
             //v.vibrate(50);
@@ -128,29 +155,21 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
-        if (deltaX > XThreshold) {
+        if (deltaX > deltaXMax) {
+            ongoing = true;
             deltaXMax = deltaX;
             maxX.setText(Float.toString(deltaXMax));
-            resultant = "Next";
-            action.setText(resultant);
         }
-        if (deltaX < -XThreshold) {
-            deltaXMax = deltaX;
+        if (deltaX < deltaXMin) {
+            ongoing = true;
+            deltaXMin = deltaX;
             maxX.setText(Float.toString(deltaXMax));
-            resultant = "Previous";
-            action.setText(resultant);
         }
-        if (Math.abs(deltaY) > Math.abs(deltaYMax)) {
-            deltaYMax = deltaY;
-            maxY.setText(Float.toString(deltaYMax));
-        }
-        if (deltaZ > ZThreshold) {
-            deltaZMax = deltaZ;
-            maxZ.setText(Float.toString(deltaZMax));
-            resultant = "Play/Pause";
-            action.setText(resultant);
-        }
-        if (deltaZ < -ZThreshold) {
+    //    if (Math.abs(deltaY) > Math.abs(deltaYMax)) {
+    //        deltaYMax = deltaY;
+    //        maxY.setText(Float.toString(deltaYMax));
+    //    }
+        if (Math.abs(deltaZ) > ZThreshold) {
             deltaZMax = deltaZ;
             maxZ.setText(Float.toString(deltaZMax));
             resultant = "Play/Pause";

@@ -20,7 +20,7 @@ public class SocketClientExample {
         //get the localhost IP address, if server is running on some other IP, you need to use that
         // InetAddress host = InetAddress.getLocalHost();
 
-        InetAddress host = InetAddress.getByName("192.168.43.57");
+        InetAddress host = InetAddress.getByName("192.168.0.105");
         Socket socket = null;
         DataOutputStream oos = null;
         ObjectInputStream ois = null;
