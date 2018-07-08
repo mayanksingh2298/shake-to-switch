@@ -28,7 +28,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaXMax = 0;
     private float deltaXMin = 0;
     private float deltaZMax = 0;
-    private float XThreshold = 15;
+    private float softXThreshold = 15;
+    private float hardXThreshold = 35;
     private float ZThreshold = 15;
 
     private boolean ongoingX = false;
@@ -75,13 +76,13 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     public void initializeViews() {
-        currentX = (TextView) findViewById(R.id.currentX);
+//        currentX = (TextView) findViewById(R.id.currentX);
         currentY = (TextView) findViewById(R.id.currentY);
-        currentZ = (TextView) findViewById(R.id.currentZ);
+//        currentZ = (TextView) findViewById(R.id.currentZ);
 
-//        maxX = (TextView) findViewById(R.id.maxX);
+        maxX = (TextView) findViewById(R.id.maxX);
 //        maxY = (TextView) findViewById(R.id.maxY);
-//        maxZ = (TextView) findViewById(R.id.maxZ);
+        maxZ = (TextView) findViewById(R.id.maxZ);
 
         action = (TextView) findViewById(R.id.action);
     }
@@ -113,13 +114,19 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     public void CheckX() {
         if (deltaXMax > Math.abs(deltaXMin)){
-            resultant = "Next";
+            if (deltaXMax > hardXThreshold)
+                resultant = "Hard-Right";
+            else
+                resultant = "Right";
             action.setText(resultant);
 //            connect();
             new send_message().execute(resultant);
         }
         else{
-            resultant = "Previous";
+            if (deltaXMin < -hardXThreshold)
+                resultant = "Hard-Left";
+            else
+                resultant = "Left";
             action.setText(resultant);
             //            connect();
             new send_message().execute(resultant);
@@ -163,7 +170,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
         // if the change is below Threshold, it is not a flick
-        if (Math.abs(deltaX) < XThreshold) {
+        if (Math.abs(deltaX) < softXThreshold) {
             deltaX = 0;
             if (ongoingX && !ongoingZ) {
                 ongoingX = false;
@@ -219,34 +226,34 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     public void displayCleanValues() {
-        currentX.setText("0.0");
+        //currentX.setText("0.0");
         currentY.setText("0.0");
-        currentZ.setText("0.0");
+        //currentZ.setText("0.0");
     }
 
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
-        currentX.setText(Float.toString(deltaX));
+//        currentX.setText(Float.toString(deltaX));
         currentY.setText(Float.toString(deltaY));
-        currentZ.setText(Float.toString(deltaZ));
+//        currentZ.setText(Float.toString(deltaZ));
     }
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
-        if (deltaX > Math.max(deltaXMax, XThreshold)) {
+        if (deltaX > Math.max(deltaXMax, softXThreshold)) {
             ongoingX = true;
             deltaXMax = deltaX;
-//            maxX.setText(Float.toString(deltaXMax));
+            maxX.setText(Float.toString(deltaXMax));
         }
-        if (deltaX < Math.min(deltaXMin, -XThreshold)) {
+        if (deltaX < Math.min(deltaXMin, -softXThreshold)) {
             ongoingX = true;
             deltaXMin = deltaX;
-//            maxX.setText(Float.toString(deltaXMin));
+            maxX.setText(Float.toString(deltaXMin));
         }
         if (Math.abs(deltaZ) > ZThreshold  ) {
             ongoingZ = true;
             deltaZMax = deltaZ;
-//            maxZ.setText(Float.toString(deltaZMax));
+            maxZ.setText(Float.toString(deltaZMax));
         }
     }
 //    public void connect() {

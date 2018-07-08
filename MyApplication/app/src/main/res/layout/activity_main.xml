@@ -60,11 +60,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="X-Axis"
+                android:text="Max X-Axis"
                 android:textSize="15dp" />
 
             <TextView
-                android:id="@+id/currentX"
+                android:id="@+id/maxX"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -112,11 +112,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="Z-Axis"
+                android:text="Max Z-Axis"
                 android:textSize="15dp" />
 
             <TextView
-                android:id="@+id/currentZ"
+                android:id="@+id/maxZ"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
