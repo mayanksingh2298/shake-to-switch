@@ -6,9 +6,9 @@ import socket               # Import socket module
 s = socket.socket()         # Create a socket object
 # host = socket.gethostname() # Get local machine name
 try:
-#	host=os.popen("hostname -I").read().split()[0]
-    host = "192.168.0.105"
-    print("host ip is: "+host)
+	host=os.popen("hostname -I").read().split()[0]
+    # host = "192.168.0.105"
+	print("host ip is: "+host)
 except:
 	print ("Please connect to a network")
 	exit()

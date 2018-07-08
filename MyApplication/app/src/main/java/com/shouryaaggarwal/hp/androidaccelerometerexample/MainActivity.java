@@ -7,8 +7,15 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.os.Vibrator;
+import android.util.Log;
+import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
+
+import java.io.DataOutputStream;
+import java.net.Socket;
 
 
 public class MainActivity extends Activity implements SensorEventListener {
@@ -42,6 +49,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         @Override
     public void onCreate(Bundle savedInstanceState) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializeViews();
@@ -67,15 +76,17 @@ public class MainActivity extends Activity implements SensorEventListener {
         currentY = (TextView) findViewById(R.id.currentY);
         currentZ = (TextView) findViewById(R.id.currentZ);
 
-        maxX = (TextView) findViewById(R.id.maxX);
-        maxY = (TextView) findViewById(R.id.maxY);
-        maxZ = (TextView) findViewById(R.id.maxZ);
+//        maxX = (TextView) findViewById(R.id.maxX);
+//        maxY = (TextView) findViewById(R.id.maxY);
+//        maxZ = (TextView) findViewById(R.id.maxZ);
 
         action = (TextView) findViewById(R.id.action);
     }
 
     //onResume() register the accelerometer for listening the events
     protected void onResume() {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -84,10 +95,15 @@ public class MainActivity extends Activity implements SensorEventListener {
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         resultant = "Flick Awaited";
         action.setText(resultant);
+//        connect();
     }
 
     //onPause() unregister the accelerometer for stop listening the events
     protected void onPause() {
+        super.onPause();
+//        sensorManager.unregisterListener(this);
+    }
+    protected void onDestroy() {
         super.onPause();
         sensorManager.unregisterListener(this);
     }
@@ -96,10 +112,12 @@ public class MainActivity extends Activity implements SensorEventListener {
         if (deltaXMax > Math.abs(deltaXMin)){
             resultant = "Next";
             action.setText(resultant);
+            connect();
         }
         else{
             resultant = "Previous";
             action.setText(resultant);
+            connect();
         }
         deltaXMax = 0;
         deltaXMin = 0;
@@ -153,6 +171,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                     deltaZMax = 0;
                     resultant = "Play/Pause";
                     action.setText(resultant);
+                    connect();
                     sensorManager.unregisterListener(this);
                     Utils.delay(coolDown, new Utils.DelayCallback() {
                         @Override
@@ -174,6 +193,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                 deltaZMax = 0;
                 resultant = "Play/Pause";
                 action.setText(resultant);
+                connect();
                 sensorManager.unregisterListener(this);
                 Utils.delay(coolDown, new Utils.DelayCallback() {
                     @Override
@@ -204,17 +224,43 @@ public class MainActivity extends Activity implements SensorEventListener {
         if (deltaX > Math.max(deltaXMax, XThreshold)) {
             ongoingX = true;
             deltaXMax = deltaX;
-            maxX.setText(Float.toString(deltaXMax));
+//            maxX.setText(Float.toString(deltaXMax));
         }
         if (deltaX < Math.min(deltaXMin, -XThreshold)) {
             ongoingX = true;
             deltaXMin = deltaX;
-            maxX.setText(Float.toString(deltaXMin));
+//            maxX.setText(Float.toString(deltaXMin));
         }
         if (Math.abs(deltaZ) > ZThreshold  ) {
             ongoingZ = true;
             deltaZMax = deltaZ;
-            maxZ.setText(Float.toString(deltaZMax));
+//            maxZ.setText(Float.toString(deltaZMax));
+        }
+    }
+    public void connect() {
+        Switch switch_view = (Switch)findViewById(R.id.connect_switch);
+        if (switch_view.isChecked()) {
+            Log.d("Button", "sending data");
+            try {
+                Socket socket;
+                DataOutputStream oos = null;
+
+                TextView ip_textview = (TextView) findViewById(R.id.ip);
+                TextView message_textview = (TextView) findViewById(R.id.action);
+
+                String host = ip_textview.getText().toString();
+                socket = new Socket(host, 12346);
+
+                oos = new DataOutputStream(socket.getOutputStream());
+                oos.writeUTF(message_textview.getText().toString());
+                oos.flush();
+
+                oos.close();
+                socket.close();
+
+            } catch (Exception e) {
+                Log.d("Exception", e.toString());
+            }
         }
     }
 }
