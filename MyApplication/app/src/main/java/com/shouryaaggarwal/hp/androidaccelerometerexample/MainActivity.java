@@ -28,7 +28,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaXMax = 0;
     private float deltaXMin = 0;
     private float deltaZMax = 0;
-    private float softXThreshold = 15;
+    private float softXThreshold = 20;
     private float hardXThreshold = 35;
     private float ZThreshold = 15;
 
