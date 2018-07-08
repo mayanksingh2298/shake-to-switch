@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import platform
 import psutil
+import os
+import subprocess as sp
 import time
 
 
@@ -18,14 +20,17 @@ if platform.system() == 'Windows':
     active_window_process_name()
 elif platform.system() == 'Linux':
     import Xlib.display
-    display = Xlib.display.Display()
-    window = display.get_input_focus().focus
-    wmname = window.get_wm_name()
-    wmclass = window.get_wm_class()
-    if wmclass is None and wmname is None:
-        window = window.query_tree().parent
-        wmname = window.get_wm_name()
-    print("WM Name: %s" % (wmname,))
+    for i in range(1000000):
+        # display = Xlib.display.Display()
+        # window = display.get_input_focus().focus
+        # wmname = window.get_wm_name()
+        # wmclass = window.get_wm_class()
+        # if wmclass is None and wmname is None:
+        #     window = window.query_tree().parent
+        #     wmname = window.get_wm_name()
+        # print("WM Name: %s" % (wmname,))
+        p = psutil.Process(int(sp.check_output(["xdotool", "getactivewindow", "getwindowpid"]).decode("utf-8").strip()))
+        print (p.name())
 elif platform.system() == 'Darwin':
     import Xlib.display
 
