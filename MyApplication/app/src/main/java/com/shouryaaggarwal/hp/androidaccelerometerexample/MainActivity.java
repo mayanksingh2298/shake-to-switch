@@ -60,7 +60,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
             // success! we have an accelerometer
 
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             vibrateThreshold = accelerometer.getMaximumRange() / 2;
         } else {
@@ -172,6 +172,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                 ongoingZ = false;
                 if ((Math.abs(deltaZMax) > deltaXMax) && (Math.abs(deltaZMax) > Math.abs(deltaXMin))) {
                     deltaZMax = 0;
+                    deltaXMax = 0;
+                    deltaXMin = 0;
                     resultant = "Play/Pause";
                     action.setText(resultant);
 //                    connect();
@@ -187,6 +189,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                     });
                 }
                 else {
+                    deltaZMax = 0;
                     CheckX();
                 }
             }
