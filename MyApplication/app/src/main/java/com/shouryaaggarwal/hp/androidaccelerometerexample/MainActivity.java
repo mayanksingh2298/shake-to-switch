@@ -6,6 +6,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.Vibrator;
@@ -49,8 +50,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         @Override
     public void onCreate(Bundle savedInstanceState) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initializeViews();
@@ -85,10 +86,10 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     //onResume() register the accelerometer for listening the events
     protected void onResume() {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+//        StrictMode.setThreadPolicy(policy);
         super.onResume();
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+//        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private void coolDownFinish(){
@@ -98,13 +99,13 @@ public class MainActivity extends Activity implements SensorEventListener {
 //        connect();
     }
 
-    //onPause() unregister the accelerometer for stop listening the events
+    //onPause() do not unregister the accelerometer for stop listening the events
     protected void onPause() {
         super.onPause();
 //        sensorManager.unregisterListener(this);
     }
     protected void onDestroy() {
-        super.onPause();
+        super.onDestroy();
         sensorManager.unregisterListener(this);
     }
 
@@ -112,12 +113,14 @@ public class MainActivity extends Activity implements SensorEventListener {
         if (deltaXMax > Math.abs(deltaXMin)){
             resultant = "Next";
             action.setText(resultant);
-            connect();
+//            connect();
+            new send_message().execute(resultant);
         }
         else{
             resultant = "Previous";
             action.setText(resultant);
-            connect();
+            //            connect();
+            new send_message().execute(resultant);
         }
         deltaXMax = 0;
         deltaXMin = 0;
@@ -171,7 +174,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                     deltaZMax = 0;
                     resultant = "Play/Pause";
                     action.setText(resultant);
-                    connect();
+//                    connect();
+                    new send_message().execute(resultant);
+
                     sensorManager.unregisterListener(this);
                     Utils.delay(coolDown, new Utils.DelayCallback() {
                         @Override
@@ -193,7 +198,9 @@ public class MainActivity extends Activity implements SensorEventListener {
                 deltaZMax = 0;
                 resultant = "Play/Pause";
                 action.setText(resultant);
-                connect();
+//                connect();
+                new send_message().execute(resultant);
+
                 sensorManager.unregisterListener(this);
                 Utils.delay(coolDown, new Utils.DelayCallback() {
                     @Override
@@ -237,30 +244,75 @@ public class MainActivity extends Activity implements SensorEventListener {
 //            maxZ.setText(Float.toString(deltaZMax));
         }
     }
-    public void connect() {
-        Switch switch_view = (Switch)findViewById(R.id.connect_switch);
-        if (switch_view.isChecked()) {
-            Log.d("Button", "sending data");
-            try {
-                Socket socket;
-                DataOutputStream oos = null;
+//    public void connect() {
+//        Switch switch_view = (Switch)findViewById(R.id.connect_switch);
+//        if (switch_view.isChecked()) {
+//            Log.d("Button", "sending data");
+//            try {
+//                Socket socket;
+//                DataOutputStream oos = null;
+//
+//                TextView ip_textview = (TextView) findViewById(R.id.ip);
+//                TextView message_textview = (TextView) findViewById(R.id.action);
+//
+//                String host = ip_textview.getText().toString();
+//                socket = new Socket(host, 12346);
+//
+//                oos = new DataOutputStream(socket.getOutputStream());
+//                oos.writeUTF(message_textview.getText().toString());
+//                oos.flush();
+//
+//                oos.close();
+//                socket.close();
+//
+//            } catch (Exception e) {
+//                Log.d("Exception", e.toString());
+//            }
+//        }
+//    }
+    private class send_message extends AsyncTask<String, Void, String> {
 
-                TextView ip_textview = (TextView) findViewById(R.id.ip);
-                TextView message_textview = (TextView) findViewById(R.id.action);
+        @Override
+        protected String doInBackground(String... params) {
+            Switch switch_view = (Switch)findViewById(R.id.connect_switch);
+            if (switch_view.isChecked()) {
+                Log.d("Button", "sending data");
+                try {
+                    Socket socket;
+                    DataOutputStream oos = null;
 
-                String host = ip_textview.getText().toString();
-                socket = new Socket(host, 12346);
+                    TextView ip_textview = (TextView) findViewById(R.id.ip);
+                    TextView message_textview = (TextView) findViewById(R.id.action);
 
-                oos = new DataOutputStream(socket.getOutputStream());
-                oos.writeUTF(message_textview.getText().toString());
-                oos.flush();
+                    String host = ip_textview.getText().toString();
+                    socket = new Socket(host, 12346);
 
-                oos.close();
-                socket.close();
+                    oos = new DataOutputStream(socket.getOutputStream());
+                    oos.writeUTF(params[0]);
+                    oos.flush();
 
-            } catch (Exception e) {
-                Log.d("Exception", e.toString());
+                    oos.close();
+                    socket.close();
+
+                } catch (Exception e) {
+                    Log.d("Exception", e.toString());
+                }
             }
+            return "";
         }
+
+        @Override
+        protected void onPostExecute(String result) {
+//            TextView txt = (TextView) findViewById(R.id.output);
+//            txt.setText("Executed"); // txt.setText(result);
+//             might want to change "executed" for the returned string passed
+            // into onPostExecute() but that is upto you
+        }
+
+        @Override
+        protected void onPreExecute() {}
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
     }
 }
