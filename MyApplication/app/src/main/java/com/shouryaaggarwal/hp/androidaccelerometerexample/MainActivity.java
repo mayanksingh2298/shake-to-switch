@@ -45,12 +45,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private String resultant = "";
 
-    private float vibrateThreshold = 0;
+    private long last_update = 0;
 
     private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action;
     private ToggleButton toggle;
 
-    public Vibrator v;
 
         @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,13 +67,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 //            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-            vibrateThreshold = accelerometer.getMaximumRange() / 2;
         } else {
             // fail! we dont have an accelerometer!
         }
 
         //initialize vibration
-        v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
     }
 
@@ -136,7 +133,57 @@ public class MainActivity extends Activity implements SensorEventListener {
         super.onDestroy();
         sensorManager.unregisterListener(this);
     }
-
+    public void mayankCheck(){
+            if (deltaX > hardXThreshold){
+                resultant = "Hard-Right";
+                action.setText(resultant);
+                new send_message().execute(resultant);
+                unregisterSensor();
+                Utils.delay(coolDown, new Utils.DelayCallback() {
+                    @Override
+                    public void afterDelay() {
+                        // Do something after delay
+                        coolDownFinish();
+                    }
+                });
+            }else if(deltaX > softXThreshold){
+                resultant = "Right";
+                action.setText(resultant);
+                new send_message().execute(resultant);
+                unregisterSensor();
+                Utils.delay(coolDown, new Utils.DelayCallback() {
+                    @Override
+                    public void afterDelay() {
+                        // Do something after delay
+                        coolDownFinish();
+                    }
+                });
+            }else if(deltaX < -hardXThreshold){
+                resultant = "Hard-Left";
+                action.setText(resultant);
+                new send_message().execute(resultant);
+                unregisterSensor();
+                Utils.delay(coolDown, new Utils.DelayCallback() {
+                    @Override
+                    public void afterDelay() {
+                        // Do something after delay
+                        coolDownFinish();
+                    }
+                });
+            }else if(deltaX < -softXThreshold){
+                resultant = "Left";
+                action.setText(resultant);
+                new send_message().execute(resultant);
+                unregisterSensor();
+                Utils.delay(coolDown, new Utils.DelayCallback() {
+                    @Override
+                    public void afterDelay() {
+                        // Do something after delay
+                        coolDownFinish();
+                    }
+                });
+            }
+    }
     public void CheckX() {
         if (deltaXMax > Math.abs(deltaXMin)){
             if (deltaXMax > hardXThreshold)
@@ -180,43 +227,70 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent event) {
 
-        // clean current values
-        displayCleanValues();
-        // display the current x,y,z accelerometer values
-        displayCurrentValues();
+        long curTime = System.currentTimeMillis();
+        if ((curTime - last_update)>10) {
+
+            // clean current values
+            displayCleanValues();
+            // display the current x,y,z accelerometer values
+            displayCurrentValues();
+
+            // get the change of the x,y,z values of the accelerometer
+
+            deltaX = event.values[0];
+            deltaY = event.values[1];
+            deltaZ = event.values[2];
+//            Log.d("DeltaXmax",String.valueOf(deltaXMax));
+//            Log.d("DeltaXmin",String.valueOf(deltaXMin));
 
 
-
-        // get the change of the x,y,z values of the accelerometer
-
-        deltaX = event.values[0];
-        deltaY = event.values[1];
-        deltaZ = event.values[2];
-
-        // display the max x,y,z accelerometer values
-        displayMaxValues();
+            // display the max x,y,z accelerometer values
+            displayMaxValues();
 
 
-
-        // if the change is below Threshold, it is not a flick
-        if (Math.abs(deltaX) < softXThreshold) {
-            deltaX = 0;
-            if (ongoingX && !ongoingZ) {
-                ongoingX = false;
-                CheckX();
+            // if the change is below Threshold, it is not a flick
+//            mayankCheck();
+            if (Math.abs(deltaX) < softXThreshold) {
+                deltaX = 0;
+                if (ongoingX && !ongoingZ) {
+                    ongoingX = false;
+                    CheckX();
+                } else if (ongoingX && ongoingZ) {
+                    ongoingX = false;
+                    ongoingZ = false;
+                    if ((Math.abs(deltaZMax) > deltaXMax) && (Math.abs(deltaZMax) > Math.abs(deltaXMin))) {
+                        deltaZMax = 0;
+                        deltaXMax = 0;
+                        deltaXMin = 0;
+                        resultant = "Play/Pause";
+                        action.setText(resultant);
+                        //                    connect();
+                        new send_message().execute(resultant);
+                        unregisterSensor();
+                        Utils.delay(coolDown, new Utils.DelayCallback() {
+                            @Override
+                            public void afterDelay() {
+                                // Do something after delay
+                                coolDownFinish();
+                            }
+                        });
+                    } else {
+                        deltaZMax = 0;
+                        CheckX();
+                    }
+                }
             }
-            else if (ongoingX && ongoingZ) {
-                ongoingX = false;
-                ongoingZ = false;
-                if ((Math.abs(deltaZMax) > deltaXMax) && (Math.abs(deltaZMax) > Math.abs(deltaXMin))) {
+            if (Math.abs(deltaZ) < ZThreshold) {
+                deltaZ = 0;
+                if (ongoingZ && !ongoingX) {
+                    ongoingZ = false;
                     deltaZMax = 0;
-                    deltaXMax = 0;
-                    deltaXMin = 0;
                     resultant = "Play/Pause";
                     action.setText(resultant);
-//                    connect();
+                    //                connect();
                     new send_message().execute(resultant);
-                    unregisterSensor();
+
+                    sensorManager.unregisterListener(this);
                     Utils.delay(coolDown, new Utils.DelayCallback() {
                         @Override
                         public void afterDelay() {
@@ -225,31 +299,8 @@ public class MainActivity extends Activity implements SensorEventListener {
                         }
                     });
                 }
-                else {
-                    deltaZMax = 0;
-                    CheckX();
-                }
             }
-        }
-        if (Math.abs(deltaZ) < ZThreshold) {
-            deltaZ = 0;
-            if (ongoingZ && !ongoingX) {
-                ongoingZ = false;
-                deltaZMax = 0;
-                resultant = "Play/Pause";
-                action.setText(resultant);
-//                connect();
-                new send_message().execute(resultant);
-
-                sensorManager.unregisterListener(this);
-                Utils.delay(coolDown, new Utils.DelayCallback() {
-                    @Override
-                    public void afterDelay() {
-                        // Do something after delay
-                        coolDownFinish();
-                    }
-                });
-            }
+            last_update = System.currentTimeMillis();
         }
     }
 
