@@ -49,7 +49,7 @@ def get_target_process():
 		is_chrome_added = False
 		for pid in all_running_processes:
 			for app in apps:
-				if psutil.Process(pid).name()==app:
+				if psutil.pid_exists(pid) and psutil.Process(pid).name()==app:
 					if app=='chrome' :
 						if psutil.Process(pid).environ()=={} and psutil.Process(pid).cmdline()[0].endswith('chrome') and (not is_chrome_added):
 							target_pid_list.append(pid)
@@ -66,18 +66,26 @@ def get_target_process():
 				target_name=app
 				target_pid=target_pid_list[target_name_list.index(app)]
 				break
+		print (target_name)
 		return (target_pid,target_name)
-	except:
+	except Exception as e:
+		print (str(e))
 		return (-1,"")
 
 
 def handle_signal_posix(signal_input,target_pid,target_name):
 	try:
+
 		if target_pid==-1:
 			return
-		window_id = os.popen("xdotool search --name "+ target_name).read().split()[-1]
+		window_id = os.popen("xdotool search --pid "+ str(target_pid)).read().split()[-1]
+		print (window_id)
 		if target_name=='evince':
-			pass
+			if signal_input==FORWARD or signal_input==NEXT:
+				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key n")
+			elif signal_input==BACKWARD or signal_input==PREVIOUS:
+				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key p")
+
 		elif target_name=='vlc':
 			if signal_input==PAUSE:
 				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key space && xdotool windowminimize "+window_id)
@@ -89,6 +97,14 @@ def handle_signal_posix(signal_input,target_pid,target_name):
 				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key p && xdotool windowminimize "+window_id)
 			elif signal_input==NEXT:
 				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key n && xdotool windowminimize "+window_id)
+	
+		elif target_name=='chrome' or target_name=='firefox':
+			if signal_input==PAUSE:
+				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key k && xdotool windowminimize "+window_id)
+			elif signal_input==FORWARD or signal_input==NEXT:
+				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key l && xdotool windowminimize "+window_id)
+			elif signal_input==BACKWARD or signal_input==PREVIOUS:
+				os.popen("xdotool windowactivate "+window_id+" && sleep 0.01 && xdotool key j && xdotool windowminimize "+window_id)
 	except:
 		pass
 
