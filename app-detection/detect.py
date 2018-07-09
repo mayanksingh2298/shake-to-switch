@@ -3,20 +3,64 @@ import platform
 import psutil
 import subprocess as sp
 import time
+import pyautogui
+
+PAUSE = 'Play/Pause'
+PREVIOUS = 'Left'
+NEXT = 'Right'
+apps = ['evince.exe', 'vlc.exe']  # in order of priority
+
+
+def get_target_process():
+    try:
+        all_running_processes = psutil.pids()
+        target_pid=-1
+        target_name=""
+        for pid in all_running_processes:
+            for app in apps:
+                if psutil.Process(pid).name()==app:
+                    target_pid = pid
+                    target_name = app
+                    break
+            if target_pid!=-1:
+                break
+        return (target_pid,target_name)
+    except:
+        return (-1,"")
 
 
 if platform.system() == 'Windows':
-    import win32process
-    import win32gui
+    import pywinauto
 
-    def active_window_process_name():
-        pid = win32process.GetWindowThreadProcessId(
-            win32gui.GetForegroundWindow())  # This produces a list of PIDs active window relates to
-        print(psutil.Process(pid[-1]).name())  # pid[-1] is the most likely to survive last longer
+    def handle_signal_nt(signal_input, target_pid, target_name):
+        try:
+            if target_pid == -1:
+                return
+            app = pywinauto.application.Application()
+            if target_name == 'evince.exe':
+                pass
+            elif target_name == 'vlc.exe':
+                app.connect(path=target_name)
+                app_dialog = app.top_window_()
+                app_dialog.Restore()
+                time.sleep(0.01)
+                if signal_input == PAUSE:
+                    pyautogui.press('space')
+                elif signal_input == NEXT:
+                    pyautogui.hotkey('shift', 'right')
+                elif signal_input == PREVIOUS:
+                    pyautogui.hotkey('shift', 'left')
+                time.sleep(0.01)
+                app_dialog.Minimize()
+        except:
+            pass
 
     while True:
         time.sleep(3)  # click on a window you like and wait 3 seconds
-        active_window_process_name()
+        target_pid, target_name = get_target_process()
+        print(target_name)
+        signal_input = PAUSE
+        handle_signal_nt(signal_input, target_pid, target_name)
 elif platform.system() == 'Linux' or platform.system() == 'Darwin':
     while True:
         time.sleep(3)
