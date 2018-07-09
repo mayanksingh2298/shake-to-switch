@@ -17,7 +17,8 @@ NEXT = 'Hard-Right'
 apps = []
 if platform.system() == 'Windows':
     import pywinauto
-    apps = ['AcroRd32.exe', 'vlc.exe', 'chrome.exe', 'firefox.exe']  # in order of priority
+    app = pywinauto.application.Application()
+    apps = ['AcroRd32.exe', 'vlc.exe']  # in order of priority
 elif platform.system() == 'Linux' or platform.system() == 'Darwin':
     apps = ['evince', 'vlc']
 
@@ -44,8 +45,8 @@ def get_target_process():
         all_running_processes = psutil.pids()
         target_pid=-1
         target_name=""
-        for pid in all_running_processes:
-            for app in apps:
+        for app in apps:
+            for pid in all_running_processes:
                 if psutil.Process(pid).name()==app:
                     target_pid = pid
                     target_name = app
@@ -86,9 +87,9 @@ if os.name == 'nt':
         try:
             if target_pid == -1:
                 return
-            app = pywinauto.application.Application()
             app.connect(path=target_name)
             app_dialog = app.top_window_()
+            app_dialog.Minimize()
             app_dialog.Restore()
             time.sleep(0.01)
             if target_name == 'AcroRd32.exe':
@@ -129,7 +130,7 @@ if os.name == 'nt':
 while True:
     #get the target process
     target_pid, target_name = get_target_process()
-    # print (target_pid, target_name)
+    # print(target_pid, target_name)
 
     #get the input signal from client
     c, addr = s.accept()     # Establish connection with client.
