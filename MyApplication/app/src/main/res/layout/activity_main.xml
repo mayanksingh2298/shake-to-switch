@@ -149,4 +149,28 @@
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <EditText
+        android:id="@+id/sensor_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="32dp"
+        android:layout_marginLeft="28dp"
+        android:layout_marginStart="28dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Use fused sensor"
+        app:layout_constraintBottom_toTopOf="@+id/ip"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ToggleButton
+        android:id="@+id/sensor_switch"
+        android:layout_width="87dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="36dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginStart="36dp"
+        android:text="ToggleButton"
+        app:layout_constraintBottom_toTopOf="@+id/connect_switch"
+        app:layout_constraintStart_toEndOf="@+id/sensor_select" />
+
 </android.support.constraint.ConstraintLayout>

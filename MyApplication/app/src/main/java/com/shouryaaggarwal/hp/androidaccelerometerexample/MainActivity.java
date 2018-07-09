@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.ToggleButton;
+import android.widget.CompoundButton;
 
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -29,8 +31,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaXMin = 0;
     private float deltaZMax = 0;
     private float softXThreshold = 20;
-    private float hardXThreshold = 35;
-    private float ZThreshold = 15;
+    private float hardXThreshold = 55;
+    private float ZThreshold = 20;
 
     private boolean ongoingX = false;
     private boolean ongoingZ = false;
@@ -46,6 +48,7 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float vibrateThreshold = 0;
 
     private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action;
+    private ToggleButton toggle;
 
     public Vibrator v;
 
@@ -61,8 +64,8 @@ public class MainActivity extends Activity implements SensorEventListener {
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
             // success! we have an accelerometer
 
-//            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
 
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             vibrateThreshold = accelerometer.getMaximumRange() / 2;
@@ -85,7 +88,27 @@ public class MainActivity extends Activity implements SensorEventListener {
         maxZ = (TextView) findViewById(R.id.maxZ);
 
         action = (TextView) findViewById(R.id.action);
-    }
+
+        toggle = (ToggleButton) findViewById(R.id.sensor_switch);
+        toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+                    coolDownFinish();
+                    softXThreshold = 20;
+                    hardXThreshold = 35;
+                    ZThreshold = 15;
+                } else {
+                    accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+                    coolDownFinish();
+                    softXThreshold = 20;
+                    hardXThreshold = 55;
+                    ZThreshold = 20;
+                }
+            }
+        });
+        }
+
 
     //onResume() register the accelerometer for listening the events
     protected void onResume() {
