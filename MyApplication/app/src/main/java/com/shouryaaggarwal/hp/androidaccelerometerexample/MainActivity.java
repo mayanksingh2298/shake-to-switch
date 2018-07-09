@@ -93,12 +93,14 @@ public class MainActivity extends Activity implements SensorEventListener {
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
+                    unregisterSensor();
                     accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
                     coolDownFinish();
                     softXThreshold = 20;
                     hardXThreshold = 35;
                     ZThreshold = 15;
                 } else {
+                    unregisterSensor();
                     accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                     coolDownFinish();
                     softXThreshold = 20;
@@ -156,7 +158,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
         deltaXMax = 0;
         deltaXMin = 0;
-        sensorManager.unregisterListener(this);
+        unregisterSensor();
         Utils.delay(coolDown, new Utils.DelayCallback() {
             @Override
             public void afterDelay() {
@@ -169,6 +171,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
+    }
+
+    private void unregisterSensor(){
+        sensorManager.unregisterListener(this);
     }
 
     @Override
@@ -210,8 +216,7 @@ public class MainActivity extends Activity implements SensorEventListener {
                     action.setText(resultant);
 //                    connect();
                     new send_message().execute(resultant);
-
-                    sensorManager.unregisterListener(this);
+                    unregisterSensor();
                     Utils.delay(coolDown, new Utils.DelayCallback() {
                         @Override
                         public void afterDelay() {
