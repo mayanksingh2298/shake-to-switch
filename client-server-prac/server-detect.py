@@ -17,7 +17,7 @@ NEXT = 'Hard-Right'
 apps = []
 if platform.system() == 'Windows':
     import pywinauto
-    apps = ['evince.exe', 'vlc.exe']  # in order of priority
+    apps = ['AcroRd32.exe', 'vlc.exe', 'chrome.exe', 'firefox.exe']  # in order of priority
 elif platform.system() == 'Linux' or platform.system() == 'Darwin':
     apps = ['evince', 'vlc']
 
@@ -87,13 +87,26 @@ if os.name == 'nt':
             if target_pid == -1:
                 return
             app = pywinauto.application.Application()
-            if target_name == 'evince.exe':
-                pass
+            app.connect(path=target_name)
+            app_dialog = app.top_window_()
+            app_dialog.Restore()
+            time.sleep(0.01)
+            if target_name == 'AcroRd32.exe':
+                if signal_input == BACKWARD:
+                    pyautogui.press('left')
+                elif signal_input == FORWARD:
+                    pyautogui.press('right')
+                elif signal_input == PREVIOUS:
+                    pyautogui.press('left')
+                    pyautogui.press('left')
+                    pyautogui.press('left')
+                    pyautogui.press('left')
+                elif signal_input == NEXT:
+                    pyautogui.press('right')
+                    pyautogui.press('right')
+                    pyautogui.press('right')
+                    pyautogui.press('right')
             elif target_name == 'vlc.exe':
-                app.connect(path=target_name)
-                app_dialog = app.top_window_()
-                app_dialog.Restore()
-                time.sleep(0.01)
                 if signal_input == PAUSE:
                     pyautogui.press('space')
                 elif signal_input == BACKWARD:
@@ -104,8 +117,11 @@ if os.name == 'nt':
                     pyautogui.press('p')
                 elif signal_input == NEXT:
                     pyautogui.press('n')
-                time.sleep(0.01)
-                app_dialog.Minimize()
+            elif target_name == 'chrome.exe' or target_name == 'firefox.exe':
+                if signal_input == PAUSE:
+                    pyautogui.press('space')
+            time.sleep(0.01)
+            app_dialog.Minimize()
         except:
             pass
 
