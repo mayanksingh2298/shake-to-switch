@@ -6,6 +6,7 @@ import socket               # Import socket module
 import psutil
 import time
 import pyautogui
+import subprocess
 
 
 PAUSE = 'Play/Pause'
@@ -14,10 +15,16 @@ FORWARD = 'Right'
 PREVIOUS = 'Hard-Left'
 NEXT = 'Hard-Right'
 
+FOCUS_MODE = False
+
 apps = []
 if platform.system() == 'Windows':
 	import pywinauto
-	apps = ['AcroRd32.exe', 'vlc.exe', 'chrome.exe', 'firefox.exe']  # in order of priority
+	import win32process
+	import win32gui
+	import pywinauto
+
+	apps = ['POWERPNT.EXE', 'vlc.exe', 'chrome.exe', 'firefox.exe']  # in order of priority
 elif platform.system() == 'Linux' or platform.system() == 'Darwin':
 	apps = ['evince', 'vlc','chrome','firefox']
 
@@ -73,9 +80,8 @@ def get_target_process():
 		return (-1,"")
 
 
-def handle_signal_posix(signal_input,target_pid,target_name):
+def handle_signal_posix(signal_input, target_pid, target_name):
 	try:
-
 		if target_pid==-1:
 			return
 		window_id = os.popen("xdotool search --pid "+ str(target_pid)).read().split()[-1]
@@ -109,9 +115,37 @@ def handle_signal_posix(signal_input,target_pid,target_name):
 		pass
 
 
-if os.name == 'nt':
-	import pywinauto
+def handle_signal_focus(signal_input):
+	if target_name.startswith('POWERPNT'):
+		if signal_input == PAUSE:
+			pyautogui.hotkey('shift', 'f5')
+		elif signal_input == BACKWARD or signal_input == PREVIOUS:
+			pyautogui.press('up')
+		elif signal_input == FORWARD or signal_input == NEXT:
+			pyautogui.press('down')
+	elif target_name.startswith('evince'):
+		if signal_input == BACKWARD or signal_input == PREVIOUS:
+			pyautogui.press('p')
+		elif signal_input == FORWARD or signal_input == NEXT:
+			pyautogui.press('n')
+	elif target_name.startswith('vlc'):
+		if signal_input == PAUSE:
+			pyautogui.press('space')
+		elif signal_input == BACKWARD:
+			pyautogui.hotkey('shift', 'left')
+		elif signal_input == FORWARD:
+			pyautogui.hotkey('shift', 'right')
+		elif signal_input == PREVIOUS:
+			pyautogui.press('p')
+		elif signal_input == NEXT:
+			pyautogui.press('n')
 
+
+def active_window_process_name_posix():
+	p = psutil.Process(int(subprocess.check_output(["xdotool", "getactivewindow", "getwindowpid"]).decode("utf-8").strip()))
+	p.name()
+
+if os.name == 'nt':
 	def handle_signal_nt(signal_input, target_pid, target_name):
 		try:
 			if target_pid == -1:
@@ -155,11 +189,17 @@ if os.name == 'nt':
 		except:
 			pass
 
+	def active_window_process_name_nt():
+		pid = win32process.GetWindowThreadProcessId(
+			win32gui.GetForegroundWindow())  # This produces a list of PIDs active window relates to
+		return psutil.Process(pid[-1]).name()  # pid[-1] is the most likely to survive last longer
+
 
 while True:
 	#get the target process
 	target_pid, target_name = get_target_process()
 	# print (target_pid, target_name)
+	current = 'None'
 
 	#get the input signal from client
 	c, addr = s.accept()     # Establish connection with client.
@@ -169,9 +209,21 @@ while True:
 	# b = bytes('Thank you for connecting', 'utf-8')
 	# c.send(b)
 	c.close()                # Close the connection
-
-	#handle the input
-	if os.name == 'posix':
-		handle_signal_posix(signal_input, target_pid, target_name)
-	elif os.name == 'nt':
-		handle_signal_nt(signal_input, target_pid, target_name)
+	# check current foreground window
+	if os.name == 'nt':
+		current = active_window_process_name_nt()
+	elif os.name == 'posix':
+		current = active_window_process_name_posix()
+	if current == target_name:
+		FOCUS_MODE = True
+	else:
+		FOCUS_MODE = False
+	# print(FOCUS_MODE)
+	# handle the input
+	if FOCUS_MODE:
+		handle_signal_focus(signal_input)
+	else:
+		if os.name == 'posix':
+			handle_signal_posix(signal_input, target_pid, target_name)
+		elif os.name == 'nt':
+			handle_signal_nt(signal_input, target_pid, target_name)

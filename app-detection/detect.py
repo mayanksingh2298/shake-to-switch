@@ -42,6 +42,7 @@ if platform.system() == 'Windows':
             elif target_name == 'vlc.exe':
                 app.connect(path=target_name)
                 app_dialog = app.top_window_()
+                app_dialog.Minimize()
                 app_dialog.Restore()
                 time.sleep(0.01)
                 if signal_input == PAUSE:
