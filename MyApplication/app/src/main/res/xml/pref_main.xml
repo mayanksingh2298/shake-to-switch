@@ -4,28 +4,37 @@
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="toggle_z"
+            android:key="@string/toggle_z"
             android:summary="Enable flicks for pause/play"
             android:title="Flick in Z axis" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="toggle_x"
+            android:key="@string/toggle_x"
             android:summary="Enable flicks for left/right"
             android:title="Soft Flick in X axis" />
 
         <CheckBoxPreference
             android:defaultValue="true"
-            android:key="toggle_x_hard"
+            android:key="@string/toggle_x_hard"
             android:summary="Enable flicks for hard-left/hard-right"
             android:title="Hard Flick in X axis" />
+
+        <ListPreference
+            android:defaultValue="20"
+            android:dialogTitle="Threshold for Z Flick"
+            android:entries="@array/X_axis_soft_flick_threshold_titles"
+            android:entryValues="@array/X_axis_soft_flick_threshold_values"
+            android:key="@string/ZThreshold"
+            android:summary="Select a level for minimum limit for Z axis flicks"
+            android:title="Threshold for Z Flick" />
 
         <ListPreference
             android:defaultValue="20"
             android:dialogTitle="Threshold for soft X Flick"
             android:entries="@array/X_axis_soft_flick_threshold_titles"
             android:entryValues="@array/X_axis_soft_flick_threshold_values"
-            android:key="softXThreshold"
+            android:key="@string/softXThreshold"
             android:summary="Select a level for minimum limit for soft flicks"
             android:title="Threshold for soft X Flick" />
 
@@ -34,33 +43,12 @@
             android:dialogTitle="Threshold for hard X Flick"
             android:entries="@array/X_axis_hard_flick_threshold_titles"
             android:entryValues="@array/X_axis_hard_flick_threshold_values"
-            android:key="hardXThreshold"
+            android:key="@string/hardXThreshold"
             android:summary="Select a level for minimum limit for hard flicks"
             android:title="Threshold for hard X Flick" />
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/pref_title_notifications">
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/notifications_new_message"
-            android:title="@string/title_new_notification_sound" />
-
-        <RingtonePreference
-            android:defaultValue="content://settings/system/notification_sound"
-            android:dependency="notifications_new_message"
-            android:key="@string/key_notifications_new_message_ringtone"
-            android:ringtoneType="notification"
-            android:summary="@string/summary_choose_ringtone"
-            android:title="@string/pref_title_ringtone" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/key_vibrate"
-            android:summary="@string/summary_vibrate"
-            android:title="@string/title_vibrate" />
-    </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/pref_header_about">
 
@@ -78,24 +66,10 @@
             android:title="@string/title_send_feedback" />
 
         <!-- preference opens url in browser -->
-        <Preference
-            android:summary="@string/summary_faq"
-            android:title="@string/title_faq">
+        <Preference android:title="@string/title_readme">
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="@string/url_faq" />
-        </Preference>
-
-        <Preference android:title="@string/privacy_policy">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/url_privacy" />
-        </Preference>
-
-        <Preference android:title="@string/title_terms">
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/url_terms" />
+                android:data="@string/url_readme" />
         </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

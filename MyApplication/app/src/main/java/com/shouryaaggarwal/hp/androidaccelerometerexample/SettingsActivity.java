@@ -32,6 +32,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MainPreferenceFragment()).commit();
     }
 
+
     public static class MainPreferenceFragment extends PreferenceFragment {
         @Override
         public void onCreate(final Bundle savedInstanceState) {
@@ -43,18 +44,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             CheckBoxPreference pref_toggle_x_hard = (CheckBoxPreference) findPreference("toggle_x_hard");
             ListPreference x_soft = (ListPreference) findPreference("softXThreshold");
             ListPreference x_hard = (ListPreference) findPreference("hardXThreshold");
+            ListPreference z_soft = (ListPreference) findPreference("ZThreshold");
 
             pref_toggle_z.setOnPreferenceChangeListener(changeValues);
             pref_toggle_x_hard.setOnPreferenceChangeListener(changeValues);
             pref_toggle_x_soft.setOnPreferenceChangeListener(changeValues);
             x_hard.setOnPreferenceChangeListener(changeValues);
             x_soft.setOnPreferenceChangeListener(changeValues);
-
-            // General change listener
-            //bindPreferenceSummaryToValue(findPreference(getString(R.string.toggle_z)));
-
-            // notification preference change listener
-            bindPreferenceSummaryToValue(findPreference(getString(R.string.key_notifications_new_message_ringtone)));
+            z_soft.setOnPreferenceChangeListener(changeValues);
 
 
             // feedback preference click listener
@@ -79,19 +76,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private static void bindPreferenceSummaryToValue(Preference preference) {
-        preference.setOnPreferenceChangeListener(sBindPreferenceSummaryToValueListener);
-
-        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference,
-                PreferenceManager
-                        .getDefaultSharedPreferences(preference.getContext())
-                        .getString(preference.getKey(), ""));
-    }
-
-    /**
-     * A preference value change listener that updates the preference's summary
-     * to reflect its new value.
-     */
 
     private static Preference.OnPreferenceChangeListener changeValues = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -102,17 +86,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 boolean value = (boolean) newValue;
                 String key = preference.getKey();
 
-                if (key.equals("toggle_z")) {
-                    if (value)
-                        MainActivity.ZThreshold = 20;
-                    else
-                        MainActivity.ZThreshold = 99999;
-                }
-                else if (key.equals("toggle_x")) {
-                    MainActivity.enablesoftX = value;
-                }
-                else if (key.equals("toggle_x_hard")) {
-                    MainActivity.enableHardX = value;
+                switch (key) {
+                    case "toggle_z":
+                        if (value)
+                            MainActivity.ZThreshold = 20;
+                        else
+                            MainActivity.ZThreshold = 99999;
+                        break;
+                    case "toggle_x":
+                        MainActivity.enableSoftX = value;
+                        break;
+                    case "toggle_x_hard":
+                        MainActivity.enableHardX = value;
                 }
             }
 
@@ -120,12 +105,19 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 // For list preferences, look up the correct display value in
                 // the preference's 'entries' list.
                 ListPreference listPreference = (ListPreference) preference;
-                String key = preference.getKey();
+                String key = listPreference.getKey();
                 int value = Integer.parseInt(stringValue);
-                if (key.equals("softXThreshold"))
-                    MainActivity.softXThreshold = value;
-                else if (key.equals("hardXThreshold"))
-                    MainActivity.hardXThreshold = value;
+                switch (key) {
+                    case "softXThreshold":
+                        MainActivity.softXThreshold = value;
+                        break;
+                    case "hardXThreshold":
+                        MainActivity.hardXThreshold = value;
+                        break;
+                    case "ZThreshold":
+                        MainActivity.ZThreshold = value;
+                        break;
+                }
             }
 
             return true;
@@ -133,56 +125,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     };
 
 
-    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
-        @Override
-        public boolean onPreferenceChange(Preference preference, Object newValue) {
-            String stringValue = newValue.toString();
-
-            if (preference instanceof ListPreference) {
-                // For list preferences, look up the correct display value in
-                // the preference's 'entries' list.
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-
-                // Set the summary to reflect the new value.
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
-
-            } else if (preference instanceof RingtonePreference) {
-                // For ringtone preferences, look up the correct display value
-                // using RingtoneManager.
-                if (TextUtils.isEmpty(stringValue)) {
-                    // Empty values correspond to 'silent' (no ringtone).
-                    preference.setSummary(R.string.pref_ringtone_silent);
-
-                } else {
-                    Ringtone ringtone = RingtoneManager.getRingtone(
-                            preference.getContext(), Uri.parse(stringValue));
-
-                    if (ringtone == null) {
-                        // Clear the summary if there was a lookup error.
-                        preference.setSummary(R.string.summary_choose_ringtone);
-                    } else {
-                        // Set the summary to reflect the new ringtone display
-                        // name.
-                        String name = ringtone.getTitle(preference.getContext());
-                        preference.setSummary(name);
-                    }
-                }
-
-            } else if (preference instanceof EditTextPreference) {
-                if (preference.getKey().equals("key_gallery_name")) {
-                    // update the changed gallery name to summary filed
-                    preference.setSummary(stringValue);
-                }
-            } else {
-                preference.setSummary(stringValue);
-            }
-            return true;
-        }
-    };
 
     /**
      * Email client intent to send support mail

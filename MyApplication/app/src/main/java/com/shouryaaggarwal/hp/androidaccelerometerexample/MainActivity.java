@@ -28,6 +28,12 @@ import java.net.Socket;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
+    public static float softXThreshold = 20;
+    public static float hardXThreshold = 55;
+    public static float ZThreshold = 20;
+    public static boolean enableHardX = true;
+    public static boolean enableSoftX = true;
+    public static String host;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -35,12 +41,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float deltaXMax = 0;
     private float deltaXMin = 0;
     private float deltaZMax = 0;
-
-    public static float softXThreshold = 20;
-    public static float hardXThreshold = 55;
-    public static float ZThreshold = 20;
-    public static boolean enableHardX = true;
-    public static boolean enablesoftX = true;
 
     private boolean ongoingX = false;
     private boolean ongoingZ = false;
@@ -59,7 +59,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private ToggleButton toggle;
 
 
-        @Override
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putBoolean("enableSoftX", enableSoftX);
+        savedInstanceState.putBoolean("enableHardX", enableHardX);
+        savedInstanceState.putFloat("softXThreshold", softXThreshold);
+        savedInstanceState.putFloat("hardXThreshold", hardXThreshold);
+        savedInstanceState.putFloat("ZThreshold", ZThreshold);
+        savedInstanceState.putString("IP",host);
+        // etc.
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        enableSoftX = savedInstanceState.getBoolean("enableSoftX");
+        enableHardX = savedInstanceState.getBoolean("enableHardX");
+        softXThreshold = savedInstanceState.getFloat("softXThreshold");
+        hardXThreshold = savedInstanceState.getFloat("hardXThreshold");
+        host = savedInstanceState.getString("IP");
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
 //        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
@@ -221,22 +243,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
     public void CheckX() {
         if (deltaXMax > Math.abs(deltaXMin)){
-            if (deltaXMax > hardXThreshold && enableHardX)
+            if (deltaXMax > hardXThreshold && enableHardX) {
                 resultant = "Hard-Right";
-            else if (enablesoftX)
+                action.setText(resultant);
+                new send_message().execute(resultant);
+            }
+            else if (enableSoftX) {
                 resultant = "Right";
-            action.setText(resultant);
-//            connect();
-            new send_message().execute(resultant);
+                action.setText(resultant);
+                new send_message().execute(resultant);
+            }
         }
         else{
-            if (deltaXMin < -hardXThreshold && enableHardX)
+            if (deltaXMin < -hardXThreshold && enableHardX) {
                 resultant = "Hard-Left";
-            else if (enablesoftX)
+                action.setText(resultant);
+                new send_message().execute(resultant);
+            }
+            else if (enableSoftX) {
                 resultant = "Left";
-            action.setText(resultant);
-            //            connect();
-            new send_message().execute(resultant);
+                action.setText(resultant);
+                new send_message().execute(resultant);
+            }
         }
         deltaXMax = 0;
         deltaXMin = 0;
@@ -414,7 +442,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     TextView ip_textview = (TextView) findViewById(R.id.ip);
                     TextView message_textview = (TextView) findViewById(R.id.action);
 
-                    String host = ip_textview.getText().toString();
+                    host = ip_textview.getText().toString();
                     socket = new Socket(host, 12346);
 
                     oos = new DataOutputStream(socket.getOutputStream());
