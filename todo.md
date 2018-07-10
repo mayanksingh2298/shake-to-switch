@@ -4,3 +4,4 @@ efficient way to find process or window by name
 prevent manual IP entering
 adjust thresholds
 code clean up
+fix delay between server requests
