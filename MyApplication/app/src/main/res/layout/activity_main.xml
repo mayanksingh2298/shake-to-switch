@@ -9,6 +9,46 @@
     android:background="#ffffff"
     android:gravity="center">
 
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="464dp"
+        android:background="#ffffff"
+        android:gravity="center|top"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/softXThreshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"
+            android:text="0.0"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/hardXThreshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="0.0"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/ZThreshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:text="0.0"
+            android:textSize="15dp" />
+
+    </LinearLayout>
+
     <EditText
         android:id="@+id/ip"
         android:layout_width="wrap_content"

@@ -1,5 +1,6 @@
 package com.shouryaaggarwal.hp.androidaccelerometerexample;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.Sensor;
@@ -11,17 +12,21 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.Vibrator;
 import android.util.Log;
-import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.content.Intent;
 
 import java.io.DataOutputStream;
 import java.net.Socket;
 
 
-public class MainActivity extends Activity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
     private SensorManager sensorManager;
@@ -30,9 +35,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     private float deltaXMax = 0;
     private float deltaXMin = 0;
     private float deltaZMax = 0;
-    private float softXThreshold = 20;
-    private float hardXThreshold = 55;
-    private float ZThreshold = 20;
+
+    public static float softXThreshold = 20;
+    public static float hardXThreshold = 55;
+    public static float ZThreshold = 20;
+    public static boolean enableHardX = true;
+    public static boolean enablesoftX = true;
 
     private boolean ongoingX = false;
     private boolean ongoingZ = false;
@@ -47,7 +55,7 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     private long last_update = 0;
 
-    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action;
+    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD;
     private ToggleButton toggle;
 
 
@@ -56,6 +64,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 //        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
 //        StrictMode.setThreadPolicy(policy);
         super.onCreate(savedInstanceState);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
         setContentView(R.layout.activity_main);
         initializeViews();
 
@@ -75,6 +85,26 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            // launch settings activity
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     public void initializeViews() {
 //        currentX = (TextView) findViewById(R.id.currentX);
         currentY = (TextView) findViewById(R.id.currentY);
@@ -85,6 +115,11 @@ public class MainActivity extends Activity implements SensorEventListener {
         maxZ = (TextView) findViewById(R.id.maxZ);
 
         action = (TextView) findViewById(R.id.action);
+
+
+        SOFTXTHRESHOLD = (TextView) findViewById(R.id.softXThreshold);
+        HARDXTHRESHOLD = (TextView) findViewById(R.id.hardXThreshold);
+        ZTHRESHOLD = (TextView) findViewById(R.id.ZThreshold);
 
         toggle = (ToggleButton) findViewById(R.id.sensor_switch);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -186,18 +221,18 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
     public void CheckX() {
         if (deltaXMax > Math.abs(deltaXMin)){
-            if (deltaXMax > hardXThreshold)
+            if (deltaXMax > hardXThreshold && enableHardX)
                 resultant = "Hard-Right";
-            else
+            else if (enablesoftX)
                 resultant = "Right";
             action.setText(resultant);
 //            connect();
             new send_message().execute(resultant);
         }
         else{
-            if (deltaXMin < -hardXThreshold)
+            if (deltaXMin < -hardXThreshold && enableHardX)
                 resultant = "Hard-Left";
-            else
+            else if (enablesoftX)
                 resultant = "Left";
             action.setText(resultant);
             //            connect();
@@ -242,6 +277,10 @@ public class MainActivity extends Activity implements SensorEventListener {
             deltaZ = event.values[2];
 //            Log.d("DeltaXmax",String.valueOf(deltaXMax));
 //            Log.d("DeltaXmin",String.valueOf(deltaXMin));
+
+            SOFTXTHRESHOLD.setText(Float.toString(softXThreshold));
+            HARDXTHRESHOLD.setText(Float.toString(hardXThreshold));
+            ZTHRESHOLD.setText(Float.toString(ZThreshold));
 
 
             // display the max x,y,z accelerometer values

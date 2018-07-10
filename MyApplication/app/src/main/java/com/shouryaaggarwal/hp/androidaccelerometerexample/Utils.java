@@ -10,6 +10,7 @@ public class Utils {
         void afterDelay();
     }
 
+
     public static void delay(float secs, final DelayCallback delayCallback){
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
