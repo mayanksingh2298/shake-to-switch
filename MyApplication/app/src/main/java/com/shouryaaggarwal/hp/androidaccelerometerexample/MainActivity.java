@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void coolDownFinish(){
-        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_FASTEST);
         resultant = "Flick Awaited";
         action.setText(resultant);
     }
