@@ -21,7 +21,7 @@
             android:title="Hard Flick in X axis" />
 
         <ListPreference
-            android:defaultValue="20"
+            android:defaultValue="30"
             android:dialogTitle="Threshold for Z Flick"
             android:entries="@array/X_axis_soft_flick_threshold_titles"
             android:entryValues="@array/X_axis_soft_flick_threshold_values"

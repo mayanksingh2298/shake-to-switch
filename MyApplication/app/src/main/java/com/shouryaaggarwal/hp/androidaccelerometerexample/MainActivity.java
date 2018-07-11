@@ -29,9 +29,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public static float softXThreshold = 20;
     public static float hardXThreshold = 55;
-    public static float ZThreshold = 35;
+    public static float ZThreshold = 30;
     public static boolean enableHardX = true;
     public static boolean enableSoftX = true;
+    public static boolean enableZ = true;
     public static String host;
     public static boolean toggleSensor = false;
 
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private long last_update = 0;
 
-    private TextView action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD, ip_textview;
+    private TextView action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD, ip_textview, deltaYview;
     private ToggleButton toggle;
 
 
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         host = ip_textview.getText().toString();
         savedInstanceState.putBoolean("enableSoftX", enableSoftX);
         savedInstanceState.putBoolean("enableHardX", enableHardX);
+        savedInstanceState.putBoolean("enableZ", enableZ);
         savedInstanceState.putFloat("softXThreshold", softXThreshold);
         savedInstanceState.putFloat("hardXThreshold", hardXThreshold);
         savedInstanceState.putFloat("ZThreshold", ZThreshold);
@@ -78,11 +80,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onRestoreInstanceState(savedInstanceState);
         enableSoftX = savedInstanceState.getBoolean("enableSoftX");
         enableHardX = savedInstanceState.getBoolean("enableHardX");
+        enableZ = savedInstanceState.getBoolean("enableZ");
         softXThreshold = savedInstanceState.getFloat("softXThreshold");
         hardXThreshold = savedInstanceState.getFloat("hardXThreshold");
         ZThreshold = savedInstanceState.getFloat("ZThreshold");
         host = savedInstanceState.getString("IP");
         toggleSensor = savedInstanceState.getBoolean("toggleSensor");
+        updateDisplay();
     }
 
     @Override
@@ -91,23 +95,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
 
-        SharedPreferences settings = getSharedPreferences("settings",0);
-        enableSoftX = settings.getBoolean("enableSoftX", true);
-        enableHardX = settings.getBoolean("enableHardX", true);
-        softXThreshold = settings.getFloat("softXThreshold", 20);
-        hardXThreshold = settings.getFloat("hardXThreshold", 55);
-        ZThreshold = settings.getFloat("ZThreshold", 20);
-        host = settings.getString("IP", "xx.xxx.x.xx");
+        GetPreferences();
 
         setContentView(R.layout.activity_main);
         initializeViews();
 
+
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
             // success! we have an accelerometer
-
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-//            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+            if(toggleSensor)
+                accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+            else
+                accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         } else {
@@ -117,6 +117,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+    public void GetPreferences() {
+        SharedPreferences settings = getSharedPreferences("settings",0);
+        enableSoftX = settings.getBoolean("enableSoftX", true);
+        enableHardX = settings.getBoolean("enableHardX", true);
+        enableZ = settings.getBoolean("enableZ", true);
+        softXThreshold = settings.getFloat("softXThreshold", 20);
+        hardXThreshold = settings.getFloat("hardXThreshold", 55);
+        ZThreshold = settings.getFloat("ZThreshold", 30);
+        host = settings.getString("IP", "xx.xxx.x.xx");
+        toggleSensor = settings.getBoolean("toggleSensor", false);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,41 +150,50 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void initializeViews() {
 
+        deltaYview = (TextView) findViewById(R.id.deltaY);
+
         action = (TextView) findViewById(R.id.action);
 
         ip_textview = (TextView) findViewById(R.id.ip);
-        ip_textview.setText(host);
 
         SOFTXTHRESHOLD = (TextView) findViewById(R.id.softXThreshold);
         HARDXTHRESHOLD = (TextView) findViewById(R.id.hardXThreshold);
         ZTHRESHOLD = (TextView) findViewById(R.id.ZThreshold);
 
         toggle = (ToggleButton) findViewById(R.id.sensor_switch);
+        updateDisplay();
+
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                toggleSensor = isChecked;
                 if (isChecked) {
                     unregisterSensor();
                     accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
                     coolDownFinish();
-                    softXThreshold = 20;
-                    hardXThreshold = 35;
-                    ZThreshold = 15;
                 } else {
                     unregisterSensor();
                     accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
                     coolDownFinish();
-                    softXThreshold = 20;
-                    hardXThreshold = 55;
-                    ZThreshold = 20;
                 }
             }
         });
         }
 
 
+     public void updateDisplay() {
+         SOFTXTHRESHOLD.setText(Float.toString(softXThreshold));
+         HARDXTHRESHOLD.setText(Float.toString(hardXThreshold));
+         ZTHRESHOLD.setText(Float.toString(ZThreshold));
+         ip_textview.setText(host);
+         toggle.setChecked(toggleSensor);
+         //toggle.setSelected(toggleSensor);
+     }
+
+
     //onResume() register the accelerometer for listening the events
     protected void onResume() {
         super.onResume();
+        updateDisplay();
 //        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
@@ -186,60 +206,74 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //onPause() do not unregister the accelerometer for stop listening the events
     protected void onPause() {
         super.onPause();
+        storePreferences();
 //        sensorManager.unregisterListener(this);
     }
+
+    protected void onStop() {
+        super.onStop();
+        storePreferences();
+    }
+
     protected void onDestroy() {
         super.onDestroy();
         sensorManager.unregisterListener(this);
+        storePreferences();
+    }
+
+
+    public void storePreferences() {
         host = ip_textview.getText().toString();
         SharedPreferences settings = getSharedPreferences("settings", 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.clear();
         editor.putBoolean("enableSoftX", enableSoftX);
         editor.putBoolean("enableHardX", enableHardX);
+        editor.putBoolean("enableZ", enableZ);
         editor.putFloat("softXThreshold", softXThreshold);
         editor.putFloat("hardXThreshold", hardXThreshold);
         editor.putFloat("ZThreshold", ZThreshold);
         editor.putString("IP",host);
+        editor.putBoolean("toggleSensor", toggleSensor);
         editor.commit();
-
     }
 
     public void CheckX() {
+        boolean flick = false;
         if (deltaXMax > Math.abs(deltaXMin)){
             if (deltaXMax > hardXThreshold && enableHardX) {
                 resultant = "Hard-Right";
-                action.setText(resultant);
-                new send_message().execute(resultant);
+                flick = true;
             }
             else if (enableSoftX) {
                 resultant = "Right";
-                action.setText(resultant);
-                new send_message().execute(resultant);
+                flick = true;
             }
         }
         else{
             if (deltaXMin < -hardXThreshold && enableHardX) {
                 resultant = "Hard-Left";
-                action.setText(resultant);
-                new send_message().execute(resultant);
+                flick = true;
             }
             else if (enableSoftX) {
                 resultant = "Left";
-                action.setText(resultant);
-                new send_message().execute(resultant);
+                flick = true;
             }
         }
         deltaXMax = 0;
         deltaXMin = 0;
-        unregisterSensor();
-        Utils.delay(coolDown, new Utils.DelayCallback() {
-            @Override
-            public void afterDelay() {
-                // Do something after delay
-                coolDownFinish();
-            }
-        });
+        if(flick) {
+            action.setText(resultant);
+            new send_message().execute(resultant);
+            unregisterSensor();
+            Utils.delay(coolDown, new Utils.DelayCallback() {
+                @Override
+                public void afterDelay() {
+                    // Do something after delay
+                    coolDownFinish();
+                }
+            });
+        }
     }
 
     @Override
@@ -266,10 +300,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            Log.d("DeltaXmax",String.valueOf(deltaXMax));
 //            Log.d("DeltaXmin",String.valueOf(deltaXMin));
 
-            SOFTXTHRESHOLD.setText(Float.toString(softXThreshold));
-            HARDXTHRESHOLD.setText(Float.toString(hardXThreshold));
-            ZTHRESHOLD.setText(Float.toString(ZThreshold));
-
+            deltaYview.setText(Float.toString(deltaY));
 
             // display the max x,y,z accelerometer values
             displayMaxValues();
@@ -285,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 } else if (ongoingX && ongoingZ) {
                     ongoingX = false;
                     ongoingZ = false;
-                    if ((Math.abs(deltaZMax) > deltaXMax) && (Math.abs(deltaZMax) > Math.abs(deltaXMin))) {
+                    if ((Math.abs(deltaZMax) > deltaXMax) && (Math.abs(deltaZMax) > Math.abs(deltaXMin)) && enableZ) {
                         deltaZMax = 0;
                         deltaXMax = 0;
                         deltaXMin = 0;
@@ -312,19 +343,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (ongoingZ && !ongoingX) {
                     ongoingZ = false;
                     deltaZMax = 0;
-                    resultant = "Play/Pause";
-                    action.setText(resultant);
-                    //                connect();
-                    new send_message().execute(resultant);
+                    if(enableZ) {
+                        resultant = "Play/Pause";
+                        action.setText(resultant);
+                        //                connect();
+                        new send_message().execute(resultant);
 
-                    sensorManager.unregisterListener(this);
-                    Utils.delay(coolDown, new Utils.DelayCallback() {
-                        @Override
-                        public void afterDelay() {
-                            // Do something after delay
-                            coolDownFinish();
-                        }
-                    });
+                        sensorManager.unregisterListener(this);
+                        Utils.delay(coolDown, new Utils.DelayCallback() {
+                            @Override
+                            public void afterDelay() {
+                                // Do something after delay
+                                coolDownFinish();
+                            }
+                        });
+                    }
                 }
             }
             last_update = System.currentTimeMillis();
@@ -338,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (deltaX > Math.max(deltaXMax, softXThreshold)) {
             ongoingX = true;
             deltaXMax = deltaX;
+
         }
         if (deltaX < Math.min(deltaXMin, -softXThreshold)) {
             ongoingX = true;

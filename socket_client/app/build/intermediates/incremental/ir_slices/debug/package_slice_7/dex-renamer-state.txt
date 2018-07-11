@@ -1,0 +1,4 @@
+#Fri Jul 06 22:08:39 IST 2018
+base.0=C\:\\Users\\HP\\Documents\\AndroidProjects\\shake_to_switdh\\socket_client\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\7
+path.0=classes.dex
+renamed.0=classes.dex

@@ -84,10 +84,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                 switch (key) {
                     case "toggle_z":
-                        if (value)
-                            MainActivity.ZThreshold = 20;
-                        else
-                            MainActivity.ZThreshold = 99999;
+                        MainActivity.enableZ = value;
                         break;
                     case "toggle_x":
                         MainActivity.enableSoftX = value;

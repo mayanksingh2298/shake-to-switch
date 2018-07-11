@@ -7,45 +7,100 @@
     android:layout_height="match_parent"
     android:layout_gravity="center"
     android:background="#ffffff"
-    android:gravity="center">
+    android:gravity="center"
+    tools:layout_editor_absoluteY="81dp">
 
 
     <LinearLayout
         android:id="@+id/linearLayout3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="464dp"
+        android:layout_marginBottom="48dp"
         android:background="#ffffff"
-        android:gravity="center|top"
+        android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/sensor_change_help"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:id="@+id/softXThreshold"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginRight="50dp"
-            android:text="0.0"
-            android:textSize="15dp" />
+            android:layout_weight="0.33"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/hardXThreshold"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="0.0"
-            android:textSize="15dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="@string/softXThreshold"
+                android:textSize="15dp" />
 
-        <TextView
-            android:id="@+id/ZThreshold"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/softXThreshold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="0.0"
+                android:textSize="15dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="50dp"
-            android:text="0.0"
-            android:textSize="15dp" />
+            android:layout_weight="0.33"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="@string/hardXThreshold"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/hardXThreshold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="0.0"
+                android:textSize="15dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.33"
+            android:background="#ffffff"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="@string/ZThreshold"
+                android:textSize="15dp" />
+
+            <TextView
+                android:id="@+id/ZThreshold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:text="0.0"
+                android:textSize="15dp" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -55,39 +110,26 @@
         android:layout_height="44dp"
         android:layout_marginLeft="36dp"
         android:layout_marginStart="36dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginTop="36dp"
         android:ems="10"
         android:gravity="center_horizontal"
         android:hint="Enter the IP"
         android:inputType="textPersonName"
         android:text="xx.xxx.x.xx"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/sensor_change_help" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="172dp"
-        android:background="#ffffff"
-        android:gravity="center|top"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
-
-    </LinearLayout>
 
     <TextView
         android:id="@+id/action"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="64dp"
         android:text="Flick awaited"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+        app:layout_constraintTop_toBottomOf="@+id/ip" />
 
     <Switch
         android:id="@+id/connect_switch"
@@ -95,38 +137,67 @@
         android:layout_height="38dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="172dp"
+        android:layout_marginTop="28dp"
         android:text="Connect"
         android:textColor="@android:color/darker_gray"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/sensor_switch" />
 
     <ToggleButton
         android:id="@+id/sensor_switch"
         android:layout_width="93dp"
         android:layout_height="44dp"
-        android:layout_marginBottom="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="168dp"
         android:text="ToggleButton"
-        app:layout_constraintBottom_toTopOf="@+id/connect_switch"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/sensor_change_help"
         android:layout_width="254dp"
         android:layout_height="32dp"
-        android:layout_marginBottom="40dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="168dp"
         android:text="Enable this if gestures aren't perfect"
-        app:layout_constraintBottom_toTopOf="@+id/connect_switch"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="44dp"
+        android:layout_weight="0.33"
+        android:background="#ffffff"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/action">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="Debug Mode - Y axis accelerator"
+            android:textSize="15dp" />
+
+        <TextView
+            android:id="@+id/deltaY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:text="0.0"
+            android:textSize="15dp" />
+    </LinearLayout>
+
 
 </android.support.constraint.ConstraintLayout>
