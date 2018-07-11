@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static boolean enableHardX = true;
     public static boolean enableSoftX = true;
     public static String host;
+    public static boolean toggleSensor = false;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -68,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         savedInstanceState.putFloat("hardXThreshold", hardXThreshold);
         savedInstanceState.putFloat("ZThreshold", ZThreshold);
         savedInstanceState.putString("IP",host);
+        savedInstanceState.putBoolean("toggleSensor", toggleSensor);
         // etc.
     }
 
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         hardXThreshold = savedInstanceState.getFloat("hardXThreshold");
         ZThreshold = savedInstanceState.getFloat("ZThreshold");
         host = savedInstanceState.getString("IP");
+        toggleSensor = savedInstanceState.getBoolean("toggleSensor");
     }
 
     @Override
