@@ -53,27 +53,16 @@
         android:id="@+id/ip"
         android:layout_width="wrap_content"
         android:layout_height="44dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginStart="30dp"
+        android:layout_marginLeft="36dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="172dp"
         android:ems="10"
         android:gravity="center_horizontal"
         android:hint="Enter the IP"
         android:inputType="textPersonName"
         android:text="xx.xxx.x.xx"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:text="Acceleration"
-        android:textSize="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/linearLayout2"
@@ -87,83 +76,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:background="#ffffff"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="Max X-Axis"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/maxX"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="0.0"
-                android:textSize="15dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:background="#ffffff"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="Y-Axis"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/currentY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="0.0"
-                android:textSize="15dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.33"
-            android:background="#ffffff"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="Max Z-Axis"
-                android:textSize="15dp" />
-
-            <TextView
-                android:id="@+id/maxZ"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="10dp"
-                android:text="0.0"
-                android:textSize="15dp" />
-        </LinearLayout>
     </LinearLayout>
 
     <TextView
@@ -181,13 +93,13 @@
         android:id="@+id/connect_switch"
         android:layout_width="101dp"
         android:layout_height="38dp"
-        android:layout_marginBottom="30dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginTop="172dp"
         android:text="Connect"
         android:textColor="@android:color/darker_gray"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ToggleButton
         android:id="@+id/sensor_switch"
@@ -196,9 +108,12 @@
         android:layout_marginBottom="40dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
         android:text="ToggleButton"
         app:layout_constraintBottom_toTopOf="@+id/connect_switch"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
     <TextView
         android:id="@+id/sensor_change_help"
@@ -207,8 +122,11 @@
         android:layout_marginBottom="40dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:text="Enable this if gestures aren't perfect"
         app:layout_constraintBottom_toTopOf="@+id/connect_switch"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
 
 </android.support.constraint.ConstraintLayout>

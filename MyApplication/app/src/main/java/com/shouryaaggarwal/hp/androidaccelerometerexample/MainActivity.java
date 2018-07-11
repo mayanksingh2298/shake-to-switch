@@ -10,15 +10,12 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.os.Vibrator;
 import android.util.Log;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 import android.widget.CompoundButton;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
@@ -32,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public static float softXThreshold = 20;
     public static float hardXThreshold = 55;
-    public static float ZThreshold = 20;
+    public static float ZThreshold = 35;
     public static boolean enableHardX = true;
     public static boolean enableSoftX = true;
     public static String host;
@@ -57,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private long last_update = 0;
 
-    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD, ip_textview;
+    private TextView action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD, ip_textview;
     private ToggleButton toggle;
 
 
@@ -87,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
         super.onCreate(savedInstanceState);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
@@ -116,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // fail! we dont have an accelerometer!
         }
 
-        //initialize vibration
 
     }
 
@@ -141,13 +135,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void initializeViews() {
-//        currentX = (TextView) findViewById(R.id.currentX);
-        currentY = (TextView) findViewById(R.id.currentY);
-//        currentZ = (TextView) findViewById(R.id.currentZ);
-
-        maxX = (TextView) findViewById(R.id.maxX);
-//        maxY = (TextView) findViewById(R.id.maxY);
-        maxZ = (TextView) findViewById(R.id.maxZ);
 
         action = (TextView) findViewById(R.id.action);
 
@@ -183,8 +170,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //onResume() register the accelerometer for listening the events
     protected void onResume() {
-//        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-//        StrictMode.setThreadPolicy(policy);
         super.onResume();
 //        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -193,7 +178,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         resultant = "Flick Awaited";
         action.setText(resultant);
-//        connect();
     }
 
     //onPause() do not unregister the accelerometer for stop listening the events
@@ -217,57 +201,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         editor.commit();
 
     }
-    public void mayankCheck(){
-            if (deltaX > hardXThreshold){
-                resultant = "Hard-Right";
-                action.setText(resultant);
-                new send_message().execute(resultant);
-                unregisterSensor();
-                Utils.delay(coolDown, new Utils.DelayCallback() {
-                    @Override
-                    public void afterDelay() {
-                        // Do something after delay
-                        coolDownFinish();
-                    }
-                });
-            }else if(deltaX > softXThreshold){
-                resultant = "Right";
-                action.setText(resultant);
-                new send_message().execute(resultant);
-                unregisterSensor();
-                Utils.delay(coolDown, new Utils.DelayCallback() {
-                    @Override
-                    public void afterDelay() {
-                        // Do something after delay
-                        coolDownFinish();
-                    }
-                });
-            }else if(deltaX < -hardXThreshold){
-                resultant = "Hard-Left";
-                action.setText(resultant);
-                new send_message().execute(resultant);
-                unregisterSensor();
-                Utils.delay(coolDown, new Utils.DelayCallback() {
-                    @Override
-                    public void afterDelay() {
-                        // Do something after delay
-                        coolDownFinish();
-                    }
-                });
-            }else if(deltaX < -softXThreshold){
-                resultant = "Left";
-                action.setText(resultant);
-                new send_message().execute(resultant);
-                unregisterSensor();
-                Utils.delay(coolDown, new Utils.DelayCallback() {
-                    @Override
-                    public void afterDelay() {
-                        // Do something after delay
-                        coolDownFinish();
-                    }
-                });
-            }
-    }
+
     public void CheckX() {
         if (deltaXMax > Math.abs(deltaXMin)){
             if (deltaXMax > hardXThreshold && enableHardX) {
@@ -320,10 +254,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         long curTime = System.currentTimeMillis();
         if ((curTime - last_update)>10) {
 
-            // clean current values
-            displayCleanValues();
-            // display the current x,y,z accelerometer values
-            displayCurrentValues();
 
             // get the change of the x,y,z values of the accelerometer
 
@@ -398,63 +328,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    public void displayCleanValues() {
-        //currentX.setText("0.0");
-        currentY.setText("0.0");
-        //currentZ.setText("0.0");
-    }
 
-    // display the current x,y,z accelerometer values
-    public void displayCurrentValues() {
-//        currentX.setText(Float.toString(deltaX));
-        currentY.setText(Float.toString(deltaY));
-//        currentZ.setText(Float.toString(deltaZ));
-    }
 
     // display the max x,y,z accelerometer values
     public void displayMaxValues() {
         if (deltaX > Math.max(deltaXMax, softXThreshold)) {
             ongoingX = true;
             deltaXMax = deltaX;
-            maxX.setText(Float.toString(deltaXMax));
         }
         if (deltaX < Math.min(deltaXMin, -softXThreshold)) {
             ongoingX = true;
             deltaXMin = deltaX;
-            maxX.setText(Float.toString(deltaXMin));
         }
         if (Math.abs(deltaZ) > ZThreshold  ) {
             ongoingZ = true;
             deltaZMax = deltaZ;
-            maxZ.setText(Float.toString(deltaZMax));
         }
     }
-//    public void connect() {
-//        Switch switch_view = (Switch)findViewById(R.id.connect_switch);
-//        if (switch_view.isChecked()) {
-//            Log.d("Button", "sending data");
-//            try {
-//                Socket socket;
-//                DataOutputStream oos = null;
-//
-//                TextView ip_textview = (TextView) findViewById(R.id.ip);
-//                TextView message_textview = (TextView) findViewById(R.id.action);
-//
-//                String host = ip_textview.getText().toString();
-//                socket = new Socket(host, 12346);
-//
-//                oos = new DataOutputStream(socket.getOutputStream());
-//                oos.writeUTF(message_textview.getText().toString());
-//                oos.flush();
-//
-//                oos.close();
-//                socket.close();
-//
-//            } catch (Exception e) {
-//                Log.d("Exception", e.toString());
-//            }
-//        }
-//    }
     private class send_message extends AsyncTask<String, Void, String> {
 
         @Override
@@ -487,10 +377,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         @Override
         protected void onPostExecute(String result) {
-//            TextView txt = (TextView) findViewById(R.id.output);
-//            txt.setText("Executed"); // txt.setText(result);
-//             might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
         }
 
         @Override
