@@ -23,7 +23,7 @@ if platform.system() == 'Windows':
     import pywinauto
     import win32process
     import win32gui
-    import pywinauto
+    from win32com.client import GetObject
 
     apps = ['POWERPNT.EXE', 'vlc.exe', 'chrome.exe', 'firefox.exe']  # in order of priority
 elif platform.system() == 'Linux' or platform.system() == 'Darwin':
@@ -80,6 +80,7 @@ def get_target_process():
         print (str(e))
         return (-1,"")
 
+
 def simulate_nt(signal_input, target_name):
     if target_name.startswith('POWERPNT'):
         if signal_input == PAUSE:
@@ -112,6 +113,14 @@ def simulate_nt(signal_input, target_name):
     elif target_name.startswith('chrome') or target_name.startswith('firefox.exe'):
         if signal_input == PAUSE:
             pyautogui.press('k')
+        elif signal_input == BACKWARD:
+            pyautogui.press('j')
+        elif signal_input == FORWARD:
+            pyautogui.press('l')
+        elif signal_input == NEXT:
+            pyautogui.hotkey('shift', 'n')
+        elif signal_input == PREVIOUS:
+            pyautogui.hotkey('shift', 'p')
 
 
 def handle_signal_posix(signal_input, target_pid, target_name):
@@ -136,9 +145,9 @@ def handle_signal_posix(signal_input, target_pid, target_name):
             if signal_input == PAUSE:
                 os.popen("xdotool key space")
             elif signal_input == BACKWARD:
-                os.popen("xdotool key shift+Right")
-            elif signal_input == FORWARD:
                 os.popen("xdotool key shift+Left")
+            elif signal_input == FORWARD:
+                os.popen("xdotool key shift+Right")
             elif signal_input == PREVIOUS:
                 os.popen("xdotool keky p")
             elif signal_input == NEXT:
@@ -158,8 +167,6 @@ def handle_signal_posix(signal_input, target_pid, target_name):
         pass
 
 
-
-
 def active_window_process_name_posix():
     p = psutil.Process(int(subprocess.check_output(["xdotool", "getactivewindow", "getwindowpid"]).decode("utf-8").strip()))
     return p.name()
@@ -173,14 +180,22 @@ if os.name == 'nt':
             if not FOCUS_MODE:
                 app = pywinauto.application.Application()
                 app.connect(path=target_name)
-                app_dialog = app.top_window_()
+                if target_name == "chrome.exe":
+                    window_handle = pywinauto.findwindows.find_windows(class_name_re=".*Chrome.*")[0]
+                    app_dialog = app.window(handle=window_handle)
+                elif target_name == "firefox.exe":
+                    window_handle = pywinauto.findwindows.find_windows(class_name_re=".*Mozilla.*")[0]
+                    app_dialog = app.window(handle=window_handle)
+                else:
+                    app_dialog = app.top_window_()
+                app_dialog.Minimize()
                 app_dialog.Restore()
-                time.sleep(SLEEP_DURATION)
+                #time.sleep(SLEEP_DURATION)
 
             simulate_nt(signal_input, target_name)
 
             if not FOCUS_MODE:
-                time.sleep(SLEEP_DURATION)
+                #time.sleep(SLEEP_DURATION)
                 app_dialog.Minimize()
         except:
             pass
@@ -190,10 +205,29 @@ if os.name == 'nt':
             win32gui.GetForegroundWindow())  # This produces a list of PIDs active window relates to
         return psutil.Process(pid[-1]).name()  # pid[-1] is the most likely to survive last longer
 
+    def get_target_process_nt():
+        target_name = ""
+        target_pid = -1
+        try:
+            WMI = GetObject('winmgmts:')
+            for app in apps:
+                p = WMI.ExecQuery('select * from Win32_Process where Name="'+app+'"')
+                if len(p) > 0:
+                    target_name = app
+                    target_pid = p[0].Properties_('ProcessId').Value
+                    break
+        except:
+            pass
+        print(target_name)
+        return target_pid, target_name
+
 
 while True:
     #get the target process
-    target_pid, target_name = get_target_process()
+    if os.name == 'nt':
+        target_pid, target_name = get_target_process_nt()
+    else:
+        target_pid, target_name = get_target_process()
     # print (target_pid, target_name)
     current = 'None'
 

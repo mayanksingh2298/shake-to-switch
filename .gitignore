@@ -1,3 +1,4 @@
 *.idea*
 venv/
 pyvenv/
+test_scripts/
