@@ -3,6 +3,7 @@ package com.shouryaaggarwal.hp.androidaccelerometerexample;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -21,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.content.Intent;
+import android.preference.PreferenceManager;
 
 import java.io.DataOutputStream;
 import java.net.Socket;
@@ -55,13 +57,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private long last_update = 0;
 
-    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD;
+    private TextView currentX, currentY, currentZ, maxX, maxY, maxZ, action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD, ip_textview;
     private ToggleButton toggle;
 
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
+        host = ip_textview.getText().toString();
         savedInstanceState.putBoolean("enableSoftX", enableSoftX);
         savedInstanceState.putBoolean("enableHardX", enableHardX);
         savedInstanceState.putFloat("softXThreshold", softXThreshold);
@@ -78,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         enableHardX = savedInstanceState.getBoolean("enableHardX");
         softXThreshold = savedInstanceState.getFloat("softXThreshold");
         hardXThreshold = savedInstanceState.getFloat("hardXThreshold");
+        ZThreshold = savedInstanceState.getFloat("ZThreshold");
         host = savedInstanceState.getString("IP");
     }
 
@@ -88,6 +92,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onCreate(savedInstanceState);
         //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
+
+        SharedPreferences settings = getSharedPreferences("settings",0);
+        enableSoftX = settings.getBoolean("enableSoftX", true);
+        enableHardX = settings.getBoolean("enableHardX", true);
+        softXThreshold = settings.getFloat("softXThreshold", 20);
+        hardXThreshold = settings.getFloat("hardXThreshold", 55);
+        ZThreshold = settings.getFloat("ZThreshold", 20);
+        host = settings.getString("IP", "xx.xxx.x.xx");
+
         setContentView(R.layout.activity_main);
         initializeViews();
 
@@ -138,6 +151,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         action = (TextView) findViewById(R.id.action);
 
+        ip_textview = (TextView) findViewById(R.id.ip);
+        ip_textview.setText(host);
 
         SOFTXTHRESHOLD = (TextView) findViewById(R.id.softXThreshold);
         HARDXTHRESHOLD = (TextView) findViewById(R.id.hardXThreshold);
@@ -189,6 +204,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onDestroy() {
         super.onDestroy();
         sensorManager.unregisterListener(this);
+        host = ip_textview.getText().toString();
+        SharedPreferences settings = getSharedPreferences("settings", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.clear();
+        editor.putBoolean("enableSoftX", enableSoftX);
+        editor.putBoolean("enableHardX", enableHardX);
+        editor.putFloat("softXThreshold", softXThreshold);
+        editor.putFloat("hardXThreshold", hardXThreshold);
+        editor.putFloat("ZThreshold", ZThreshold);
+        editor.putString("IP",host);
+        editor.commit();
+
     }
     public void mayankCheck(){
             if (deltaX > hardXThreshold){
@@ -439,7 +466,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     Socket socket;
                     DataOutputStream oos = null;
 
-                    TextView ip_textview = (TextView) findViewById(R.id.ip);
                     TextView message_textview = (TextView) findViewById(R.id.action);
 
                     host = ip_textview.getText().toString();
