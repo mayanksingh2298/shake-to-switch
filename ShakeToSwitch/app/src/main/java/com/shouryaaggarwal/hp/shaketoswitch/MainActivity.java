@@ -8,7 +8,9 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.util.Log;
+import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -159,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         ZTHRESHOLD = (TextView) findViewById(R.id.ZThreshold);
 
         toggle = (ToggleButton) findViewById(R.id.sensor_switch);
+
         updateDisplay();
 
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -176,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             }
         });
         }
-
 
      public void updateDisplay() {
          SOFTXTHRESHOLD.setText(Float.toString(softXThreshold));

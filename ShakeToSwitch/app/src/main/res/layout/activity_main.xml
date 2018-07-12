@@ -15,13 +15,13 @@
         android:id="@+id/linearLayout3"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
+        android:layout_marginBottom="48dp"
         android:background="#ffffff"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@+id/ip"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent">
 
         <LinearLayout
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="@string/softXThreshold"
+                android:text="X\u00A0soft"
                 android:textSize="15dp" />
 
             <TextView
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="@string/hardXThreshold"
+                android:text="X\u00A0hard"
                 android:textSize="15dp" />
 
             <TextView
@@ -89,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
-                android:text="@string/ZThreshold"
+                android:text="Z"
                 android:textSize="15dp" />
 
             <TextView
@@ -202,6 +202,20 @@
             android:text="0.0"
             android:textSize="15dp" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/threshold_help"
+        android:layout_width="wrap_content"
+        android:layout_height="22dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="7dp"
+        android:text="Thresholds"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </android.support.constraint.ConstraintLayout>

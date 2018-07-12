@@ -149,7 +149,7 @@ def handle_signal_posix(signal_input, target_pid, target_name):
             elif signal_input == FORWARD:
                 os.popen("xdotool key shift+Right")
             elif signal_input == PREVIOUS:
-                os.popen("xdotool keky p")
+                os.popen("xdotool key p")
             elif signal_input == NEXT:
                 os.popen("xdotool key n")
 
@@ -223,14 +223,6 @@ if os.name == 'nt':
 
 
 while True:
-    #get the target process
-    if os.name == 'nt':
-        target_pid, target_name = get_target_process_nt()
-    else:
-        target_pid, target_name = get_target_process()
-    # print (target_pid, target_name)
-    current = 'None'
-
     #get the input signal from client
     c, addr = s.accept()     # Establish connection with client.
     print(('Got connection from'+ str(addr)))
@@ -239,7 +231,18 @@ while True:
     # b = bytes('Thank you for connecting', 'utf-8')
     # c.send(b)
     c.close()                # Close the connection
+    
+    #get the target process
+    if os.name == 'nt':
+        target_pid, target_name = get_target_process_nt()
+    else:
+        target_pid, target_name = get_target_process()
+    # print (target_pid, target_name)
+
+    
+   
     # check current foreground window
+    current = 'None'
     if os.name == 'nt':
         current = active_window_process_name_nt()
     elif os.name == 'posix':
