@@ -307,7 +307,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
             // if the change is below Threshold, it is not a flick
-//            mayankCheck();
             if (Math.abs(deltaX) < softXThreshold) {
                 deltaX = 0;
                 if (ongoingX && !ongoingZ) {
