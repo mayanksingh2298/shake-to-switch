@@ -25,7 +25,7 @@ if platform.system() == 'Windows':
     import win32gui
     from win32com.client import GetObject
 
-    apps = ['POWERPNT.EXE', 'vlc.exe', 'chrome.exe', 'firefox.exe']  # in order of priority
+    apps = ['POWERPNT.EXE', 'AcroRd32.exe', 'vlc.exe', 'chrome.exe', 'firefox.exe']  # in order of priority
 elif platform.system() == 'Linux' or platform.system() == 'Darwin':
     apps = ['evince', 'vlc','chrome','firefox']
 
@@ -190,20 +190,21 @@ if os.name == 'nt':
                     app_dialog = app.top_window_()
                 app_dialog.Minimize()
                 app_dialog.Restore()
-                #time.sleep(SLEEP_DURATION)
 
             simulate_nt(signal_input, target_name)
 
             if not FOCUS_MODE:
-                #time.sleep(SLEEP_DURATION)
                 app_dialog.Minimize()
         except:
             pass
 
     def active_window_process_name_nt():
-        pid = win32process.GetWindowThreadProcessId(
-            win32gui.GetForegroundWindow())  # This produces a list of PIDs active window relates to
-        return psutil.Process(pid[-1]).name()  # pid[-1] is the most likely to survive last longer
+        try:
+            pid = win32process.GetWindowThreadProcessId(
+                win32gui.GetForegroundWindow())  # This produces a list of PIDs active window relates to
+            return psutil.Process(pid[-1]).name()  # pid[-1] is the most likely to survive last longer
+        except:
+            return "None"
 
     def get_target_process_nt():
         target_name = ""
@@ -232,6 +233,7 @@ while True:
     current = 'None'
 
     #get the input signal from client
+
     c, addr = s.accept()     # Establish connection with client.
     print(('Got connection from'+ str(addr)))
     signal_input = str(c.recv(1024).decode("UTF-8"))[2:]
@@ -239,11 +241,13 @@ while True:
     # b = bytes('Thank you for connecting', 'utf-8')
     # c.send(b)
     c.close()                # Close the connection
+
     # check current foreground window
     if os.name == 'nt':
         current = active_window_process_name_nt()
     elif os.name == 'posix':
         current = active_window_process_name_posix()
+
     if current == target_name:
         FOCUS_MODE = True
     else:
