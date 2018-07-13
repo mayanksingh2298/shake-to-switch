@@ -25,7 +25,7 @@ source venv/bin/activate
 pip install requirements.txt (for linux and mac)
 pip install requirements_win.txt (for windows) TOADD
 ```
-2. Install the android app on your phone. TOADD
+2. Install the android app on your phone. (apk located at "...\shake_to_switch\ShakeToSwitch\app\release\app-release.apk"
 
 ### How to use?
 1. Activate the virtual environment on your system.
@@ -50,7 +50,7 @@ python server-detect.py
 1. On the app's home screen there is a button which says, "enable this if gestures aren't perfect". You can try that. It basically switches between the Accelerometer senosor and the Linear Acceleration sensor, which rules out gravitational acceleration from measurements.
 2. In the android app's settings, you can enable or disable specific gestures.
 3. You can change the threshold for each gesture, i.e. how strong flick is required for the gesture to be detected.
-4. You can edit the server file to change the priorities, which is line 28 for windows users and line 30 for linux and mac users. TOADD
+4. You can edit the server file to change the priorities, which is line 28 for windows users and line 30 for linux and mac users.
 
 ## Some videos
 TOADD
