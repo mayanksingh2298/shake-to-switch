@@ -1,52 +1,77 @@
-# shake to switch
+# Shake to Switch
+Don't you find that bit of a struggle when you are sitting comfortable watching a movie on your laptop and someone disturbs you and you have to reach to your keyboard to pause/rewind the movie?
 
-Functionality
-The project comes with an android app and a computer server, which after setting up, would enable the user to control their desktop applications remotely via gesture flicks on their smartphones.
+Or maybe your are working on some pretty important task with VLC/youtube running in the background, and isn't it annoying when you have to switch windows in order to change the music?
 
-Currently implemented gestures are - forward/backward, right, left, hard-right, hard-left.
+Not a music or movie lover? But we're sure it is always a discomfort to reach out to keyboard to go to the next page of a document or a presentation.
 
-Apps currently supported (in order of priority)
-Linux - evince, vlc, chrome(youtube), firefox(youtube)
-Windows - powerpoint, adobe reader (32bit), vlc media player, chrome(youtube), firefox(youtube)
+This was our motivation behind building this project `Shake to Switch`. We want people to use gestures to interact with their conputers and believe it or not, your mobile device already contains a dozen sensors in it. So we made an application that uses the accelerometer in your mobile to detect flicks and send them over a socket connection to a server running on your computer. 
 
-## Technical
-The android app is developed using android studio and the computer server is scripted using python.
+In simple words:-
+* Shake your device softly to the left/right for `backwards/forward` signal.
+* Give a hard shake to left/right for `previous/next` signal.
+* Shake your device towards you for a `play/pause` signal.
 
+TOADD accelerometer XYZ image
 
 ## Getting Started
 ### Installing
-you need python-pip installed on your system to run the server on your system
-install virtualenv using pip
-clone the repository to your system
-set up a python virtual environment in the root directory
-navitage to the root directory of project from terminal and activate the virtual environment
-run "pip install -r requirements_win.txt" in a windows terminal
-run "pip install -r requirements.txt" in a linux/mac terminal
-install the application apk file
+1. The server is a python3 script which requires some modules. You can install them inside a virtual environment as follows:
+```bash
+git clone https://github.com/mayanksingh2298/shake-to-switch
+cd shake-to-switch
+python -m venv venv
+source venv/bin/activate
+pip install requirements.txt TOADD
+```
+2. Install the android app on your phone. TOADD
 
 ### How to use?
-open any desired system app that you want to control
-run "python server-detect.py" from terminal (from root directory of project)
-"shake_to_switch\ShakeToSwitch\app\release\app-release.apk" in any android device
-open the application from android device and enter the host IP displayed in the system terminal and toggle the connect switch
-now you can shake/flick your mobile device to control the system application remotely
+1. Activate the virtual environment on your system.
+```
+source venv/bin/activate
+```
+2. Start the server on your computer.
+```
+python server-detect.py
+
+```
+3. Open the application on your device.
+4. Enter the `IP` of your system in the application and click on `Connect`. The IP is logged on the terminal when you run the server.
+5. That's it. You can give your device a flick to convey signals to the server.
+
+### How it works?
+1. Upon receiving a signal, the server scans the applications running on your system for the supported applications and select the one with the highest priority.
+2. If that application is not a focussed or active window, we bring that into focus, perform the action and then minimize it.
+3. If that application was already in focus, we simply do the required task.
 
 ### How to configure?
-tap the options button in the top right of the home screen of app and navigate to settings
-enable/disable the gestures and set threshold according to your ease
-use "enable this if gestures aren't perfect" switch to toggle between two different kind of accelerometer sensors and chose one best suited to your needs
-in order to customise the priority order of apps, edit line 28(for windows) and line 30(for linux or mac), and reorder written apps in your preferred order.
+1. On the app's home screen there is a button which says, "enable this if gestures aren't perfect". You can try that. It basically switches between the Accelerometer senosor and the Linear Acceleration sensor, which rules out gravitational acceleration from measurements.
+2. In the android app's settings, you can enable or disable specific gestures.
+3. You can change the threshold for each gesture, i.e. how strong flick is required for the gesture to be detected.
+4. You can edit the server file to change the priorities. TOADD
 
 ## Some videos
+TOADD
 
 ## Supported apps
-Linux - evince, vlc, chrome(youtube), firefox(youtube)
-Windows - powerpoint, adobe reader (32bit), vlc media player, chrome(youtube), firefox(youtube)
+* Linux
+  1. evince or better known as the document reader
+  2. vlc
+  3. chrome
+  4. firefox
+* Windows
+  1. powerpoint
+  2. acrobat reader
+  3. vlc
+  4. chrome
+  5. firefox
+  
 
-## Import points to remember
+## Import points to remember TOADD
 1. Avoid controlling 32 bit apps from 64 bit python and vice versa, for non focus mod only, on windows (works sometimes, sometimes don't, gives warning on terminal always)
-2. Restart browsers like chrome which start multiple processes on startup because sometimes they open a background invisible window which screws up code. 
-3. If some gesture isn't working, try resetting the switch in settings
+2. Restart browsers like chrome which start multiple processes on startup because sometimes they open a background invisible window which screws up code - (happened once in Windows, window closed self in few minutes, didn't happen on restart) 
+3. If some gesture isn't working, try resetting the switch in settings.
 
 ## Authors
 * [Mayank Singh Chauhan](https://www.github.com/mayanksingh2298)
