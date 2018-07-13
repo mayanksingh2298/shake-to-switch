@@ -5,7 +5,6 @@ import os
 import socket               # Import socket module
 import psutil
 import time
-import pyautogui
 import subprocess
 
 
@@ -20,6 +19,7 @@ FOCUS_MODE = False
 
 apps = []
 if platform.system() == 'Windows':
+    import pyautogui
     import pywinauto
     import win32process
     import win32gui
