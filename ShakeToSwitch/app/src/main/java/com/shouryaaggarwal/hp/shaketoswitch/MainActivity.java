@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private long last_update = 0;
 
-    private TextView action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD, ip_textview, deltaYview;
+    private TextView action, HARDXTHRESHOLD, SOFTXTHRESHOLD, ZTHRESHOLD, ip_textview;
     private ToggleButton toggle;
 
 
@@ -149,9 +149,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void initializeViews() {
-
-        deltaYview = (TextView) findViewById(R.id.deltaY);
-
+        
         action = (TextView) findViewById(R.id.action);
 
         ip_textview = (TextView) findViewById(R.id.ip);
@@ -300,7 +298,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            Log.d("DeltaXmax",String.valueOf(deltaXMax));
 //            Log.d("DeltaXmin",String.valueOf(deltaXMin));
 
-            deltaYview.setText(Float.toString(deltaY));
 
             // display the max x,y,z accelerometer values
             displayMaxValues();
