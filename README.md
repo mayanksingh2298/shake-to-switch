@@ -8,11 +8,11 @@ Not a music or movie lover? But we're sure it is always a discomfort to reach ou
 This was our motivation behind building this project `Shake to Switch`. We want people to use gestures to interact with their conputers and believe it or not, your mobile device already contains a dozen sensors in it. So we made an application that uses the accelerometer in your mobile to detect flicks and send them over a socket connection to a server running on your computer. 
 
 In simple words:-
-* Shake your device softly to the left/right for `backwards/forward` signal.
-* Give a hard shake to left/right for `previous/next` signal.
-* Shake your device towards you or away from you for a `play/pause` signal.
+* Shake your device softly to the left/right (X axis) for `backwards/forward` signal.
+* Give a hard shake to left/right for (X axis) `previous/next` signal.
+* Shake your device towards you or away from you (Z axis) for a `play/pause` signal.
 
-![phone accelerometer axes image](https://www.mathworks.com/help/supportpkg/android/ref/simulinkandroidsupportpackage_galaxys4_accelerometer.png)
+<img src="https://www.mathworks.com/help/supportpkg/android/ref/simulinkandroidsupportpackage_galaxys4_accelerometer.png" width="250" height="250" alt="phone accelerometer axes image"/>
 
 ## Getting Started
 ### Installing
@@ -25,7 +25,7 @@ source venv/bin/activate
 pip install requirements.txt (for linux and mac)
 pip install requirements_win.txt (for windows)
 ```
-2. Install the android app on your phone. (apk located at "...\shake_to_switch\ShakeToSwitch\app\release\app-release.apk"
+2. Install `ShakeToSwitch.apk` on your phone.
 
 ### How to use?
 1. Activate the virtual environment on your system.
@@ -42,7 +42,7 @@ python server-detect.py
 5. That's it. You can give your device a flick to convey signals to the server.
 
 ### How it works?
-1. Upon receiving a signal, the server scans the applications running on your system for the supported applications and select the one with the highest priority.
+1. Upon receiving a signal from the phone, the server scans the applications running on your system for the supported applications and select the one with the highest priority.
 2. If that application is not a focussed or active window, we bring that into focus, perform the action and then minimize it.
 3. If that application was already in focus, we simply do the required task.
 
@@ -52,8 +52,8 @@ python server-detect.py
 3. You can change the threshold for each gesture, i.e. how strong flick is required for the gesture to be detected.
 4. You can edit the server file to change the priorities, which is line 28 for windows users and line 30 for linux and mac users.
 
-## Some videos
-TOADD
+## How to shake?
+![How to shake](https://github.com/mayanksingh2298/shake-to-switch/blob/master/practice/how-to-shake.gif)
 
 ## Supported apps
 * Linux
@@ -69,10 +69,11 @@ TOADD
   5. firefox (youtube)
   
 
-## Import points to remember TOADD
+## Import points to remember
 1. Avoid controlling 32 bit apps from 64 bit python and vice versa, for non focus mod only, on windows. (works sometimes, sometimes don't, gives warning on terminal always)
 2. Restart browsers like chrome which start multiple processes on startup because sometimes they open a background invisible window which screws up code. 
-3. If some gesture isn't working, try resetting the switch in settings.
+3. If some gesture isn't working, try switching that gesture off and then back on.
+4. While controlling youtube on chrome/firefox, make sure the tab for youtube is in focus.
 
 ## Authors
 * [Mayank Singh Chauhan](https://www.github.com/mayanksingh2298)
