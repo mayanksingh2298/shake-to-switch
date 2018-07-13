@@ -22,7 +22,8 @@ git clone https://github.com/mayanksingh2298/shake-to-switch
 cd shake-to-switch
 python -m venv venv
 source venv/bin/activate
-pip install requirements.txt TOADD
+pip install requirements.txt (for linux and mac)
+pip install requirements_win.txt (for windows) TOADD
 ```
 2. Install the android app on your phone. TOADD
 
@@ -49,7 +50,7 @@ python server-detect.py
 1. On the app's home screen there is a button which says, "enable this if gestures aren't perfect". You can try that. It basically switches between the Accelerometer senosor and the Linear Acceleration sensor, which rules out gravitational acceleration from measurements.
 2. In the android app's settings, you can enable or disable specific gestures.
 3. You can change the threshold for each gesture, i.e. how strong flick is required for the gesture to be detected.
-4. You can edit the server file to change the priorities. TOADD
+4. You can edit the server file to change the priorities, which is line 28 for windows users and line 30 for linux and mac users. TOADD
 
 ## Some videos
 TOADD
@@ -69,8 +70,8 @@ TOADD
   
 
 ## Import points to remember TOADD
-1. Avoid controlling 32 bit apps from 64 bit python and vice versa, for non focus mod only, on windows (works sometimes, sometimes don't, gives warning on terminal always)
-2. Restart browsers like chrome which start multiple processes on startup because sometimes they open a background invisible window which screws up code - (happened once in Windows, window closed self in few minutes, didn't happen on restart) 
+1. Avoid controlling 32 bit apps from 64 bit python and vice versa, for non focus mod only, on windows. (works sometimes, sometimes don't, gives warning on terminal always)
+2. Restart browsers like chrome which start multiple processes on startup because sometimes they open a background invisible window which screws up code. 
 3. If some gesture isn't working, try resetting the switch in settings.
 
 ## Authors
