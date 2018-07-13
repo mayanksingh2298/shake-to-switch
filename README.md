@@ -10,9 +10,9 @@ This was our motivation behind building this project `Shake to Switch`. We want 
 In simple words:-
 * Shake your device softly to the left/right for `backwards/forward` signal.
 * Give a hard shake to left/right for `previous/next` signal.
-* Shake your device towards you for a `play/pause` signal.
+* Shake your device towards you or away from you for a `play/pause` signal.
 
-TOADD accelerometer XYZ image
+![phone accelerometer axes image](https://www.mathworks.com/help/supportpkg/android/ref/simulinkandroidsupportpackage_galaxys4_accelerometer.png)
 
 ## Getting Started
 ### Installing
@@ -23,7 +23,7 @@ cd shake-to-switch
 python -m venv venv
 source venv/bin/activate
 pip install requirements.txt (for linux and mac)
-pip install requirements_win.txt (for windows) TOADD
+pip install requirements_win.txt (for windows)
 ```
 2. Install the android app on your phone. (apk located at "...\shake_to_switch\ShakeToSwitch\app\release\app-release.apk"
 
@@ -59,14 +59,14 @@ TOADD
 * Linux
   1. evince or better known as the document reader
   2. vlc
-  3. chrome
-  4. firefox
+  3. chrome (youtube)
+  4. firefox (youtube)
 * Windows
   1. powerpoint
   2. acrobat reader
   3. vlc
-  4. chrome
-  5. firefox
+  4. chrome (youtube)
+  5. firefox (youtube)
   
 
 ## Import points to remember TOADD
