@@ -127,7 +127,7 @@ def handle_signal_posix(signal_input, target_pid, target_name):
     try:
         if target_pid == -1:
             return
-        window_id = os.popen("xdotool search --pid " + str(target_pid)).read().split()[-1]
+        window_id = os.popen("xdotool search --onlyvisible --pid " + str(target_pid)).read().split()[0]
 
         if not FOCUS_MODE:
             os.popen("xdotool windowactivate "+window_id)
