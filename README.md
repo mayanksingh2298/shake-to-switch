@@ -5,7 +5,7 @@ Or maybe your are working on some pretty important task with VLC/youtube running
 
 Not a music or movie lover? But we're sure it is always a discomfort to reach out to keyboard to go to the next page of a document or a presentation.
 
-This was our motivation behind building this project `Shake to Switch`. We want people to use gestures to interact with their conputers and believe it or not, your mobile device already contains a dozen sensors in it. So we made an application that uses the accelerometer in your mobile to detect flicks and send them over a socket connection to a server running on your computer. 
+This was our motivation behind building this project `Shake to Switch`. We want people to use gestures to interact with their computers and believe it or not, your mobile device already contains a dozen sensors in it. So we made an application that uses the accelerometer in your mobile to detect flicks and send them over a socket connection to a server running on your computer. 
 
 In simple words:-
 * Shake your device softly to the left/right (X axis) for `backwards/forward` signal.
